@@ -1,0 +1,25 @@
+#tasks {
+    display: flex;
+    flex-direction: row
+}
+
+.task {
+    border: 2px solid #D3D3D3;
+    margin: 10px;
+    padding: 5px;
+    background-color: white;
+}
+
+.task-column {
+    background-color: #F1F1F1;
+    margin: 10px;
+    padding: 2px;
+}
+
+.title-column {
+    /* background-color: #A5F5F5; */
+    padding-left: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}

@@ -1,0 +1,67 @@
+<html>
+<head>
+    <title>Tasks</title>
+</head>
+<body>
+    <div id="tasks">
+
+        <div class="task-column" id="todo">
+            <p class="title-column">Todo</p>
+            {{range .}}
+                {{if eq .CurrentState 0}}
+                <div class="task">
+                    <a href="google.com">ID-{{.Id}}: {{.Title}}</a>
+                    <p>{{.Content}}</p>
+                    <p>{{.Date}}</p>
+                    <br>
+                </div>
+                {{end}}
+            {{end}}
+        </div>
+
+        <div class="task-column" id="doing">
+            <p class="title-column">Doing</p>
+            {{range .}}
+                {{if eq .CurrentState 1}}
+                <div class="task">
+                    <a href="google.com">ID-{{.Id}}: {{.Title}}</a>
+                    <p>{{.Content}}</p>
+                    <p>{{.Date}}</p>
+                    <br>
+                </div>
+                {{end}}
+            {{end}}
+        </div>
+
+        <div class="task-column" id="onhold">
+            <p class="title-column">Onhold</p>
+            {{range .}}
+                {{if eq .CurrentState 2}}
+                <div class="task">
+                    <a href="google.com">ID-{{.Id}}: {{.Title}}</a>
+                    <p>{{.Content}}</p>
+                    <p>{{.Date}}</p>
+                    <br>
+                </div>
+                {{end}}
+            {{end}}
+        </div>
+
+        <div class="task-column" id="done">
+            <p class="title-column">Done</p>
+            {{range .}}
+                {{if eq .CurrentState 3}}
+                <div class="task">
+                    <a href="google.com">ID-{{.Id}}: {{.Title}}</a>
+                    <p>{{.Content}}</p>
+                    <p>{{.Date}}</p>
+                    <br>
+                </div>
+                {{end}}
+            {{end}}
+        </div>
+    </div>
+    <link rel="stylesheet" href="/main.css">
+    <link rel="stylesheet" href="/tasks.css">
+</body>
+</html>
