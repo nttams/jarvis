@@ -22,16 +22,56 @@
             // height: 150px;
             background-color: white;
 
-            .task-id {
+            .task-title {
                 cursor: pointer;
                 font-weight: bold;
-                text-decoration: underline;
+                letter-spacing: 1.2px;
             }
 
             .date {
                 margin: 0px;
-                font-size: 14px;
+                font-size: 12px;
                 color: grey;
+                // letter-spacing: 0.5px;
+            }
+
+            .priority {
+                display: inline-block;
+                width: 40px;
+                text-align: center;
+                color: white;
+                border-radius: 5px;
+                font-size: 14px;
+                font-weight: bold;
+                border: none;
+
+            }
+
+            .priority-low {
+                .priority();
+                background-color: green;
+            }
+
+            .priority-med {
+                .priority();
+                background-color: orange;
+            }
+
+            .priority-high {
+                .priority();
+                background-color: red;
+            }
+
+            .priority-hot {
+                .priority();
+                background-color: purple;
+                animation: blinker 1s linear infinite;
+            }
+
+            @keyframes blinker {
+                50% {
+                    opacity: 0;
+                }
             }
         }
     }

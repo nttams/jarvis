@@ -34,12 +34,13 @@ func postTask(w http.ResponseWriter, r *http.Request) {
 
 	title := r.PostForm["title"][0]
 	content := r.PostForm["content"][0]
-	currentState, _ := strconv.Atoi(r.PostForm["state"][0])
+	state, _ := strconv.Atoi(r.PostForm["state"][0])
+	priority, _ := strconv.Atoi(r.PostForm["priority"][0])
 
 	if id == -1 {
-		dh.CreateNewTask(title, content, currentState)
+		dh.CreateNewTask(title, content, state, priority)
 	} else {
-		dh.UpdateTask(id, title, content, currentState)
+		dh.UpdateTask(id, title, content, state, priority)
 	}
 
 	http.Redirect(w, r, "/tasks/", http.StatusFound)
@@ -47,26 +48,14 @@ func postTask(w http.ResponseWriter, r *http.Request) {
 
 func getTasks(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("static/tasks.html")
+
+	// todo: sort this
 	tasks := dh.ReadAllTasks()
 
 	tasksForHtml := []dh.TaskForHtml{}
 
 	for _, task := range tasks {
-		year, month, date := task.Date.Date()
-		hour, min, _ := task.Date.Clock()
-
-		taskForHtml := dh.TaskForHtml{}
-		taskForHtml.Id = task.Id
-		taskForHtml.Title = task.Title
-		taskForHtml.Content = task.Content
-		taskForHtml.CurrentState = task.CurrentState
-		taskForHtml.Date =
-			strconv.Itoa(date) + "/" +
-			strconv.Itoa(int(month)) + "/" +
-			strconv.Itoa(year) + " "+
-			strconv.Itoa(hour) + ":" +
-			strconv.Itoa(min)
-
+		taskForHtml := dh.ConvertTaskToTaskForHtml(&task)
 		tasksForHtml = append(tasksForHtml, taskForHtml)
 	}
 

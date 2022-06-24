@@ -11,16 +11,20 @@ type Task struct {
 	Id int
 	Title string
 	Content string
-	CurrentState State
-	Date time.Time
+	State State
+	Priority Priority
+	CreatedTime time.Time
+	LastUpdateTime time.Time
 }
 
 type TaskForHtml struct {
 	Id int
 	Title string
 	Content string
-	CurrentState State
-	Date string
+	State State
+	Priority Priority
+	CreatedTime string
+	LastUpdateTime string
 }
 
 type State int
@@ -30,6 +34,37 @@ const (
 	Onhold
 	Done
 )
+
+type Priority int
+const (
+	Low Priority = iota
+	Med
+	High
+	Hot
+)
+
+func ConvertTaskToTaskForHtml(task *Task) (result TaskForHtml) {
+	result.Id = task.Id
+	result.Title = task.Title
+	result.Content = task.Content
+	result.State = task.State
+	result.Priority = task.Priority
+	result.CreatedTime = convertTimeToString(&task.CreatedTime)
+	result.LastUpdateTime = convertTimeToString(&task.LastUpdateTime)
+
+	return
+}
+
+func convertTimeToString(t *time.Time) string {
+	year, month, date := t.Date()
+	hour, min, _ := t.Clock()
+
+	return strconv.Itoa(date) + "/" +
+		strconv.Itoa(int(month)) + "/" +
+		strconv.Itoa(year) + " "+
+		strconv.Itoa(hour) + ":" +
+		strconv.Itoa(min)
+}
 
 func (s State) ToString() string {
 	switch s {
@@ -41,6 +76,20 @@ func (s State) ToString() string {
 		return "onhold"
 	case Done:
 		return "done"
+	}
+	return "unknown"
+}
+
+func (p Priority) ToString() string {
+	switch p {
+	case Low:
+		return "Low"
+	case Med:
+		return "Med"
+	case High:
+		return "High"
+	case Hot:
+		return "Hot"
 	}
 	return "unknown"
 }
@@ -75,29 +124,29 @@ func getAFreeId() int {
 	return max + 1;
 }
 
-func CreateNewTask(title string, content string, state int) {
+func CreateNewTask(title string, content string, state int, priority int) {
 	id := getAFreeId()
 
-	updateDate := time.Now()
-	task := Task {id, title, content, State(state), updateDate}
+	now := time.Now()
+	task := Task {id, title, content, State(state), Priority(priority), now, now}
 	saveTask(&task)
 }
 
-func UpdateTask(id int, title string, content string, state int) {
-	updateDate := time.Now()
-	task := Task {id, title, content, State(state), updateDate}
+func UpdateTask(id int, title string, content string, state int, priority int) {
+	task := ReadTask(id)
+	task.Title = title;
+	task.Content = content;
+	task.State = State(state);
+	task.Priority = Priority(priority);
+	task.LastUpdateTime = time.Now();
 	saveTask(&task)
 }
 
-func readTask(id int) (*Task, error) {
-	filename := getFilename(id)
-	encoded, _ := os.ReadFile(filename)
-
-	var result Task
-
-	_ = json.Unmarshal(encoded, &result)
-
-	return &result, nil
+func ReadTask(id int) Task {
+	encoded, _ := os.ReadFile(getFilename(id))
+	var task Task
+	_ = json.Unmarshal(encoded, &task)
+	return task
 }
 
 func ReadAllTasks() []Task {

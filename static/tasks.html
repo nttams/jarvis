@@ -9,58 +9,62 @@
     <div id="tasks">
         <div class="task-column" id="todo">
             <p class="title-column">Todo</p>
-            {{range .}}
-                {{if eq .CurrentState 0}}
+            {{ range . }}
+                {{if eq .State 0}}
                 <div class="task">
-                    <p class="task-id" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .CurrentState }})"> TASK-{{.Id}}: {{.Title}}</p>
-                    <p>{{.Content}}</p>
-                    <p class="date">Created on: {{.Date}}</p>
-                    <p class="date">Last update: {{.Date}}</p>
+                    <span class="priority">{{ .Priority }}</span>
+                    <span class="task-title" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .State }}, {{ .Priority }})"> T-{{.Id}}: {{.Title}}</span>
+                    <p>{{ .Content }}</p>
+                    <p class="date">Created on: {{ .CreatedTime }}</p>
+                    <p class="date">Last update: {{ .LastUpdateTime }}</p>
                 </div>
-                {{end}}
-            {{end}}
+                {{ end }}
+            {{ end }}
         </div>
 
         <div class="task-column" id="doing">
             <p class="title-column">Doing</p>
-            {{range .}}
-                {{if eq .CurrentState 1}}
+            {{ range . }}
+                {{if eq .State 1}}
                 <div class="task">
-                    <p class="task-id" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .CurrentState }})"> TASK-{{.Id}}: {{.Title}}</p>
-                    <p>{{.Content}}</p>
-                    <p class="date">Created on: {{.Date}}</p>
-                    <p class="date">Last update: {{.Date}}</p>
+                    <span class="priority">{{ .Priority }}</span>
+                    <span class="task-title" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .State }}, {{ .Priority }})"> T-{{.Id}}: {{.Title}}</span>
+                    <p>{{ .Content }}</p>
+                    <p class="date">Created on: {{ .CreatedTime }}</p>
+                    <p class="date">Last update: {{ .LastUpdateTime }}</p>
                 </div>
-                {{end}}
-            {{end}}
+                {{ end }}
+            {{ end }}
         </div>
 
         <div class="task-column" id="onhold">
             <p class="title-column">Onhold</p>
-            {{range .}}
-                {{if eq .CurrentState 2}}
+            {{ range . }}
+                {{if eq .State 2}}
                 <div class="task">
-                    <p class="task-id" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .CurrentState }})"> TASK-{{.Id}}: {{.Title}}</p>
-                    <p>{{.Content}}</p>
-                    <p class="date">Created on: {{.Date}}</p>
-                    <p class="date">Last update: {{.Date}}</p>
+                    <span class="priority">{{ .Priority }}</span>
+                    <span class="task-title" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .State }}, {{ .Priority }})"> T-{{.Id}}: {{.Title}}</span>
+                    <p>{{ .Content }}</p>
+                    <p class="date">Created on: {{ .CreatedTime }}</p>
+                    <p class="date">Last update: {{ .LastUpdateTime }}</p>
                 </div>
-                {{end}}
-            {{end}}
+                {{ end }}
+            {{ end }}
         </div>
 
         <div class="task-column" id="done">
             <p class="title-column">Done</p>
-            {{range .}}
-                {{if eq .CurrentState 3}}
+            {{ range . }}
+                {{if eq .State 3}}
                 <div class="task">
-                    <p class="task-id" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .CurrentState }})"> TASK-{{.Id}}: {{.Title}}</p>
-                    <p>{{.Content}}</p>
-                    <p class="date">Created on: {{.Date}}</p>
-                    <p class="date">Last update: {{.Date}}</p>
+                    <span class="priority">{{ .Priority }}</span>
+                    <span class="task-title" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .State }}, {{ .Priority }})"> T-{{.Id}}: {{.Title}}</span>
+                    <p>{{ .Content }}</p>
+                    <p class="date">Created on: {{ .CreatedTime }}</p>
+                    <p class="date">Last update: {{ .LastUpdateTime }}</p>
                 </div>
-                {{end}}
-            {{end}}
+                {{ end }}
+            {{ end }}
         </div>
     </div>
 
@@ -84,6 +88,16 @@
             <input type="radio" id="state_done" name="state" value="3">
             <label for="state_done">Done</label>
 
+            <br>
+            <input type="radio" id="priority_low" name="priority" value="0">
+            <label for="priority_low">Low</label>
+            <input type="radio" id="priority_med" name="priority" value="1">
+            <label for="priority_med">Med</label>
+            <input type="radio" id="priority_high" name="priority" value="2">
+            <label for="priority_high">High</label>
+            <input type="radio" id="priority_hot" name="priority" value="3">
+            <label for="priority_hot">Hot</label>
+
             <br><br>
         </form>
 
@@ -91,7 +105,7 @@
             <input type="hidden" id="task-id-delete" name="id-delete">
         </form>
 
-        <input class="button" type="submit" value="Submit" form="update-form">
+        <input class="button" type="submit" value="Ok" form="update-form">
         <input class="button" type="submit" value="Delete" form="delete-form" >
         <button class="button" type="button" id="close-popup">Close</button>
     </div>
