@@ -27,8 +27,8 @@ function init_friends() {
 function change_friend(value) {
     const player = document.querySelector('#friends_player');
     const sub = player.getElementsByTagName('track')[0];
-    player.src = '/pub/friends/videos/' + value + '.mp4'
-    sub.src = '/pub/friends/sub/' + value + '.vtt'
+    player.src = '/res/friends/videos/' + value + '.mp4'
+    sub.src = '/res/friends/sub/' + value + '.vtt'
 }
 
 function init_ee() {
@@ -44,7 +44,7 @@ function init_ee() {
 
 function change_ee(value) {
     const player = document.querySelector('#ee_player');
-    player.src = '/pub/ee/' + value + '.mp3'
+    player.src = '/res/ee/' + value + '.mp3'
 }
 
 function init_youtube() {

@@ -4,7 +4,7 @@
 </head>
 <body>
     <div id="task-menu">
-        <button onclick="createTask()"> Create Step</button>
+        <button onclick="createTask()"> Create Task</button>
     </div>
     <div id="tasks">
         <div class="task-column" id="todo">
@@ -12,7 +12,7 @@
             {{range .}}
                 {{if eq .CurrentState 0}}
                 <div class="task">
-                    <p class="task-id" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .CurrentState }})"> STEP-{{.Id}}: {{.Title}}</p>
+                    <p class="task-id" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .CurrentState }})"> TASK-{{.Id}}: {{.Title}}</p>
                     <p>{{.Content}}</p>
                     <p class="date">Created on: {{.Date}}</p>
                     <p class="date">Last update: {{.Date}}</p>
@@ -26,7 +26,7 @@
             {{range .}}
                 {{if eq .CurrentState 1}}
                 <div class="task">
-                    <p class="task-id" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .CurrentState }})"> STEP-{{.Id}}: {{.Title}}</p>
+                    <p class="task-id" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .CurrentState }})"> TASK-{{.Id}}: {{.Title}}</p>
                     <p>{{.Content}}</p>
                     <p class="date">Created on: {{.Date}}</p>
                     <p class="date">Last update: {{.Date}}</p>
@@ -40,7 +40,7 @@
             {{range .}}
                 {{if eq .CurrentState 2}}
                 <div class="task">
-                    <p class="task-id" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .CurrentState }})"> STEP-{{.Id}}: {{.Title}}</p>
+                    <p class="task-id" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .CurrentState }})"> TASK-{{.Id}}: {{.Title}}</p>
                     <p>{{.Content}}</p>
                     <p class="date">Created on: {{.Date}}</p>
                     <p class="date">Last update: {{.Date}}</p>
@@ -54,7 +54,7 @@
             {{range .}}
                 {{if eq .CurrentState 3}}
                 <div class="task">
-                    <p class="task-id" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .CurrentState }})"> STEP-{{.Id}}: {{.Title}}</p>
+                    <p class="task-id" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .CurrentState }})"> TASK-{{.Id}}: {{.Title}}</p>
                     <p>{{.Content}}</p>
                     <p class="date">Created on: {{.Date}}</p>
                     <p class="date">Last update: {{.Date}}</p>

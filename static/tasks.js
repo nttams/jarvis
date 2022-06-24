@@ -33,10 +33,21 @@ function createTask() {
     popup.style.display = 'block'
 
     document.querySelector('#popup').querySelector("#task-id").value = -1
-    document.querySelector('#popup').querySelector("#task-title").value = "new task"
-    document.querySelector('#popup').querySelector("#task-content").value = "new content"
+    document.querySelector('#popup').querySelector("#task-title").value = ""
+    document.querySelector('#popup').querySelector("#task-content").value = ""
 
     document.querySelector('#popup').querySelector("#state_todo").checked = true
 }
+
+
+numTodo = document.querySelector("#todo").childElementCount - 1
+numDoing = document.querySelector("#doing").childElementCount - 1
+numOnhold = document.querySelector("#onhold").childElementCount - 1
+numDone = document.querySelector("#done").childElementCount - 1
+
+document.querySelector("#todo").querySelector(".title-column").innerHTML = "Todo (" + numTodo + ")"
+document.querySelector("#doing").querySelector(".title-column").innerHTML = "Todo (" + numDoing + ")"
+document.querySelector("#onhold").querySelector(".title-column").innerHTML = "Todo (" + numOnhold + ")"
+document.querySelector("#done").querySelector(".title-column").innerHTML = "Todo (" + numDone + ")"
 
 setTimeout(init, 10)

@@ -58,7 +58,7 @@ func DeleteTask(id int) {
 }
 
 func getAFreeId() int {
-	path := "./data"
+	path := "./static/data"
 	file, _ := os.Open(path)
 
 	files, _ := file.Readdir(0)
@@ -101,7 +101,7 @@ func readTask(id int) (*Task, error) {
 }
 
 func ReadAllTasks() []Task {
-	path := "./data"
+	path := "./static/data"
 	file, _ := os.Open(path)
 
 	files, _ := file.Readdir(0)
@@ -118,7 +118,7 @@ func ReadAllTasks() []Task {
 }
 
 func ReadAllImagePaths(folder string) []string {
-	path := "./pub/" + folder
+	path := "./static/res/" + folder
 	file, _ := os.Open(path)
 
 	files, _ := file.Readdir(0)
@@ -126,11 +126,11 @@ func ReadAllImagePaths(folder string) []string {
 	result := []string{}
 
 	for _, v := range files {
-		result = append(result, path[1:] + "/" + v.Name())
+		result = append(result, path[len("./static"):] + "/" + v.Name())
 	}
 	return result
 }
 
 func getFilename(id int) string {
-	return "./data/" + strconv.Itoa(id) + ".json"
+	return "./static/data/" + strconv.Itoa(id) + ".json"
 }
