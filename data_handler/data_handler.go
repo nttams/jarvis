@@ -1,7 +1,6 @@
 package data_handler
 
 import (
-	// "fmt"
 	"os"
 	"encoding/json"
 	"time"
@@ -14,6 +13,14 @@ type Task struct {
 	Content string
 	CurrentState State
 	Date time.Time
+}
+
+type TaskForHtml struct {
+	Id int
+	Title string
+	Content string
+	CurrentState State
+	Date string
 }
 
 type State int
@@ -46,6 +53,42 @@ func saveTask(task *Task) error {
 	return os.WriteFile(filename, encoded, 0600)
 }
 
+func DeleteTask(id int) {
+	os.Remove(getFilename(id))
+}
+
+func getAFreeId() int {
+	path := "./data"
+	file, _ := os.Open(path)
+
+	files, _ := file.Readdir(0)
+
+	max := -1
+	for _, v := range files {
+		filename := v.Name()[:len(v.Name())-5]
+		temp, _:= strconv.Atoi(filename)
+		if temp > max {
+			max = temp
+		}
+	}
+
+	return max + 1;
+}
+
+func CreateNewTask(title string, content string, state int) {
+	id := getAFreeId()
+
+	updateDate := time.Now()
+	task := Task {id, title, content, State(state), updateDate}
+	saveTask(&task)
+}
+
+func UpdateTask(id int, title string, content string, state int) {
+	updateDate := time.Now()
+	task := Task {id, title, content, State(state), updateDate}
+	saveTask(&task)
+}
+
 func readTask(id int) (*Task, error) {
 	filename := getFilename(id)
 	encoded, _ := os.ReadFile(filename)
@@ -74,8 +117,8 @@ func ReadAllTasks() []Task {
 	return result
 }
 
-func ReadAllImagePaths() []string {
-	path := "./pub/k50"
+func ReadAllImagePaths(folder string) []string {
+	path := "./pub/" + folder
 	file, _ := os.Open(path)
 
 	files, _ := file.Readdir(0)

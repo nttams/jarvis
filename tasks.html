@@ -3,17 +3,19 @@
     <title>Tasks</title>
 </head>
 <body>
+    <div id="task-menu">
+        <button onclick="createTask()"> Create Step</button>
+    </div>
     <div id="tasks">
-
         <div class="task-column" id="todo">
             <p class="title-column">Todo</p>
             {{range .}}
                 {{if eq .CurrentState 0}}
                 <div class="task">
-                    <a href="google.com">ID-{{.Id}}: {{.Title}}</a>
+                    <p class="task-id" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .CurrentState }})"> STEP-{{.Id}}: {{.Title}}</p>
                     <p>{{.Content}}</p>
-                    <p>{{.Date}}</p>
-                    <br>
+                    <p class="date">Created on: {{.Date}}</p>
+                    <p class="date">Last update: {{.Date}}</p>
                 </div>
                 {{end}}
             {{end}}
@@ -24,10 +26,10 @@
             {{range .}}
                 {{if eq .CurrentState 1}}
                 <div class="task">
-                    <a href="google.com">ID-{{.Id}}: {{.Title}}</a>
+                    <p class="task-id" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .CurrentState }})"> STEP-{{.Id}}: {{.Title}}</p>
                     <p>{{.Content}}</p>
-                    <p>{{.Date}}</p>
-                    <br>
+                    <p class="date">Created on: {{.Date}}</p>
+                    <p class="date">Last update: {{.Date}}</p>
                 </div>
                 {{end}}
             {{end}}
@@ -38,10 +40,10 @@
             {{range .}}
                 {{if eq .CurrentState 2}}
                 <div class="task">
-                    <a href="google.com">ID-{{.Id}}: {{.Title}}</a>
+                    <p class="task-id" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .CurrentState }})"> STEP-{{.Id}}: {{.Title}}</p>
                     <p>{{.Content}}</p>
-                    <p>{{.Date}}</p>
-                    <br>
+                    <p class="date">Created on: {{.Date}}</p>
+                    <p class="date">Last update: {{.Date}}</p>
                 </div>
                 {{end}}
             {{end}}
@@ -52,16 +54,52 @@
             {{range .}}
                 {{if eq .CurrentState 3}}
                 <div class="task">
-                    <a href="google.com">ID-{{.Id}}: {{.Title}}</a>
+                    <p class="task-id" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .CurrentState }})"> STEP-{{.Id}}: {{.Title}}</p>
                     <p>{{.Content}}</p>
-                    <p>{{.Date}}</p>
-                    <br>
+                    <p class="date">Created on: {{.Date}}</p>
+                    <p class="date">Last update: {{.Date}}</p>
                 </div>
                 {{end}}
             {{end}}
         </div>
     </div>
-    <link rel="stylesheet" href="/main.css">
-    <link rel="stylesheet" href="/tasks.css">
+
+    <div id="overlay"></div>
+
+    <div id="popup">
+        <form id="update-form" action="/tasks/" method="post">
+            <input type="hidden" id="task-id" name="id">
+
+            <input type="text" class="form-item" id="task-title" name="title">
+
+            <br>
+            <textarea class="form-item" id="task-content" name="content"></textarea>
+
+            <input type="radio" id="state_todo" name="state" value="0">
+            <label for="state_todo">Todo</label>
+            <input type="radio" id="state_doing" name="state" value="1">
+            <label for="state_doing">Doing</label>
+            <input type="radio" id="state_onhold" name="state" value="2">
+            <label for="state_onhold">Onhold</label>
+            <input type="radio" id="state_done" name="state" value="3">
+            <label for="state_done">Done</label>
+
+            <br><br>
+        </form>
+
+        <form id="delete-form" action="/delete-task/" method="post" onsubmit="return confirm('really?')">
+            <input type="hidden" id="task-id-delete" name="id-delete">
+        </form>
+
+        <input class="button" type="submit" value="Submit" form="update-form">
+        <input class="button" type="submit" value="Delete" form="delete-form" >
+        <button class="button" type="button" id="close-popup">Close</button>
+    </div>
+
+    <script src="/tasks.js"></script>
+
+    <link rel="stylesheet/less" type="text/css" href="/main.less" />
+    <link rel="stylesheet/less" type="text/css" href="/tasks.less" />
+    <script src="https://cdn.jsdelivr.net/npm/less@4" ></script>
 </body>
 </html>
