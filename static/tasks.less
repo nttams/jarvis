@@ -12,13 +12,21 @@
 
 .btn {
     .btn();
-    background-color: blue;
+    background-color: #6caf6c;
+}
+
+.btn:hover {
+    background-color: green;
 }
 
 .btn-delete {
     .btn();
-    background-color: red;
+    background-color: #FF7F7F;
     float: right;
+}
+
+.btn-delete:hover {
+    background-color: red;
 }
 
 .btn-delete:disabled {
@@ -36,13 +44,17 @@
     border: none;
 }
 
+// #main-container {
+//     min-height: 80vh;
+//     flex-grow: 1;
+// }
+
 #tasks {
     display: flex;
     flex-direction: row;
 
     .task-column {
-        background-color: #c9c9c9;
-        // background-color: grey;
+        background-color: #161B22;
         margin: 10px;
         padding: 2px;
         width: 25vw;
@@ -56,37 +68,33 @@
         }
 
         .task {
-            border: 1px solid #D3D3D3;
+            border: 0.1px solid grey;
             border-radius: 10px;
             margin: 10px;
             padding: 10px;
-            background-color: white;
+            background-color: #0D1118;
             min-height: 100px;
 
             display: flex;
             flex-direction: column;
 
             .task-title {
-                color: grey;
+                color: white;
                 cursor: pointer;
                 font-weight: bold;
                 letter-spacing: 1.2px;
+                font-size:20px;
             }
 
             .task-content {
+                color: white;
                 margin: 5px 0px;
                 flex-grow: 1;
             }
 
-            .date {
-                // margin: 0px;
-                font-size: 12px;
-                color: grey;
-            }
-
             .live-time {
                 .tag();
-                background-color: black;
+                background-color: grey;
                 letter-spacing: 1.5px;
             }
 
@@ -137,7 +145,7 @@
     position: fixed;
     top: 50%;
     left: 50%;
-    background: white;
+    background: #161B22;
     width: 50%;
     max-width: 500px;
     height: fit-content;
@@ -149,11 +157,11 @@
 
     padding: 20px;
 
-
-
     .task-font {
         font-family: 'Assistant', sans-serif;
-        font-size: 16px;
+        font-size: 18px;
+        background-color: #0D1118;
+        color: white;
     }
 
     #task-id {
@@ -166,7 +174,7 @@
     #task-id-label {
         .tag();
         .task-font();
-        background-color: blue;
+        background-color: green;
     }
 
     #task-title {

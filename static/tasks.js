@@ -16,10 +16,10 @@ function initTitles() {
     numOnhold = document.querySelector("#onhold").childElementCount - 1
     numDone = document.querySelector("#done").childElementCount - 1
 
-    document.querySelector("#todo").querySelector(".title-column").innerHTML = "Todo " + numTodo
-    document.querySelector("#doing").querySelector(".title-column").innerHTML = "Doing " + numDoing
-    document.querySelector("#onhold").querySelector(".title-column").innerHTML = "Onhold " + numOnhold
-    document.querySelector("#done").querySelector(".title-column").innerHTML = "Done " + numDone
+    document.querySelector("#todo").querySelector(".title-column").innerHTML = "Todo (" + numTodo + ")"
+    document.querySelector("#doing").querySelector(".title-column").innerHTML = "Doing (" + numDoing + ")"
+    document.querySelector("#onhold").querySelector(".title-column").innerHTML = "Onhold (" + numOnhold + ")"
+    document.querySelector("#done").querySelector(".title-column").innerHTML = "Done (" + numDone + ")"
 }
 
 function initCreateButtion() {

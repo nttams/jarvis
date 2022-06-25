@@ -4,17 +4,23 @@ html {
     margin: 0;
     padding: 0;
     font-family: 'Assistant', sans-serif;
-    font-size: 16px;
+    font-size: 18px;
+    color: white;
+    background-color: #0D1118;
 }
 
 body {
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 header {
-    width: fit-content;
-    margin-top: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: white;
+    background-color: #161B22;
     ul {
         list-style-type: none;
         margin: 0;
@@ -30,12 +36,12 @@ header {
     .li-item {
         font-weight: bold;
         display: block;
-        color: black;
-        font-size:18px;
+        font-size: 18px;
         text-align: center;
         padding: 0px 10px;
         text-decoration: none;
         cursor: pointer;
+        color: white;
     }
 
     .li-item-hover {
@@ -52,11 +58,11 @@ header {
 
     #btn-create {
         .li-item();
-        background-color: blue;
+        background-color: green;
+        padding: 5px 15px;
         color: white;
         border-radius: 5px;
-        padding-top: 2px;
-        padding-bottom: 2px;
+        float:right;
     }
 
     #btn-create:hover {
@@ -64,10 +70,16 @@ header {
     }
 }
 
+// todo: make the footer always at bottom
 footer {
+    padding: 10px 0;
+    margin: 0;
+    margin-top: auto;
+
+    // for inside
     display: flex;
-    width: 100%;
     justify-content: center;
+    background-color: #161B22;
 
     #contacts {
         width: 60%;
@@ -75,7 +87,6 @@ footer {
 
     .footer-item {
         display: block;
-        color: black;
         text-decoration: none;
         letter-spacing: 1px;
     }
