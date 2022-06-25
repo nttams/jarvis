@@ -1,4 +1,6 @@
-# homer
+# jarvis
+
+A simple web server for tasks managing, media center and for other project demos
 
 ### todo
 * tasks manager

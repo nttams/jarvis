@@ -48,7 +48,7 @@ func postTask(w http.ResponseWriter, r *http.Request) {
 }
 
 func getTasks(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("static/tasks.html")
+	t, _ := template.ParseFiles("static/tasks.html", "static/header.html", "static/footer.html", "static/importer.html")
 
 	// todo: sort this
 	tasks := dh.ReadAllTasks()
@@ -65,14 +65,14 @@ func getTasks(w http.ResponseWriter, r *http.Request) {
 
 // todo: make these generic
 func k50Handler(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("static/images.html")
+	t, _ := template.ParseFiles("static/images.html", "static/header.html", "static/footer.html", "static/importer.html")
 	paths := dh.GetFileList("res/k50")
 
 	t.Execute(w, paths)
 }
 
 func tnpdHandler(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("static/images.html")
+	t, _ := template.ParseFiles("static/images.html", "static/header.html", "static/footer.html", "static/importer.html")
 	paths := dh.GetFileList("res/tnpd")
 
 	t.Execute(w, paths)
@@ -84,15 +84,26 @@ func mediaHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
+func iconHandler(w http.ResponseWriter, r* http.Request) {
+	http.ServeFile(w, r, "./static/favicon.ico")
+}
+
+func rootHandler(w http.ResponseWriter, r* http.Request) {
+	t, _ := template.ParseFiles("static/index.html", "static/header.html", "static/footer.html", "static/importer.html")
+	t.Execute(w, 0)
+}
+
 func main() {
+	fs := http.FileServer(http.Dir("./static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+
+	http.HandleFunc("/", rootHandler)
 	http.HandleFunc("/tasks/", tasksHandler)
 	http.HandleFunc("/k50/", k50Handler)
 	http.HandleFunc("/tnpd/", tnpdHandler)
 	http.HandleFunc("/delete-task/", deleteHandler)
 	http.HandleFunc("/media/", mediaHandler)
-
-	fs := http.FileServer(http.Dir("./static"))
-	http.Handle("/", fs)
+	http.HandleFunc("/favicon.ico", iconHandler)
 
 	http.ListenAndServe(":8080", nil)
 }

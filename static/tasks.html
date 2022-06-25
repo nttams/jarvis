@@ -1,11 +1,13 @@
 <html>
 <head>
     <title>Tasks</title>
+
+    <link rel="stylesheet/less" type="text/css" href="/static/tasks.less" />
+    {{template "importer" .}}
+
 </head>
 <body>
-    <div id="task-menu">
-        <button class="button" onclick="createTask()"> Create</button>
-    </div>
+    {{template "header" .}}
     <div id="tasks">
         <div class="task-column" id="todo">
             <p class="title-column">Todo</p>
@@ -145,14 +147,12 @@
             <input type="hidden" id="task-id-delete" name="id-delete">
         </form>
 
-        <input class="button" type="submit" value="Ok" form="update-form">
-        <input class="button-delete" type="submit" value="Delete" form="delete-form" >
+        <input class="btn" type="submit" value="Ok" form="update-form">
+        <input class="btn-delete" type="submit" value="Delete" form="delete-form" >
     </div>
 
-    <script src="/tasks.js"></script>
+    {{template "footer" .}}
 
-    <link rel="stylesheet/less" type="text/css" href="/main.less" />
-    <link rel="stylesheet/less" type="text/css" href="/tasks.less" />
-    <script src="https://cdn.jsdelivr.net/npm/less@4" ></script>
+    <script src="/static/tasks.js"></script>
 </body>
 </html>

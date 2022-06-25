@@ -1,6 +1,91 @@
 @import url('https://fonts.googleapis.com/css2?family=Assistant&family=Montserrat:wght@100&display=swap');
 
-input, body {
+html {
+    margin: 0;
+    padding: 0;
     font-family: 'Assistant', sans-serif;
     font-size: 16px;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    width: fit-content;
+    margin-top: 10px;
+    ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+
+    li {
+        margin: 0px 10px;
+        float: left;
+    }
+
+    .li-item {
+        font-weight: bold;
+        display: block;
+        color: black;
+        font-size:18px;
+        text-align: center;
+        padding: 0px 10px;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .li-item-hover {
+        text-decoration: underline;
+    }
+
+    li a {
+        .li-item()
+    }
+
+    li a:hover {
+        .li-item-hover()
+    }
+
+    #btn-create {
+        .li-item();
+        background-color: blue;
+        color: white;
+        border-radius: 5px;
+        padding-top: 2px;
+        padding-bottom: 2px;
+    }
+
+    #btn-create:hover {
+        .li-item-hover()
+    }
+}
+
+footer {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+
+    #contacts {
+        width: 60%;
+    }
+
+    .footer-item {
+        display: block;
+        color: black;
+        text-decoration: none;
+        letter-spacing: 1px;
+    }
+
+    .footer-item:hover {
+        text-decoration: underline;
+    }
+
+    #contacts {
+        font-size: 30px;
+        letter-spacing: 5px;
+    }
 }

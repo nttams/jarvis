@@ -2,13 +2,18 @@
 <head>
     <!-- todo: fix this title -->
     <title>k50</title>
+
+    <link rel="stylesheet/less" type="text/css" href="/static/images.less" />
+    {{template "importer" .}}
+
 </head>
 <body>
+    {{template "header" .}}
+
     {{range .}}
     <img src="{{.}}" alt="notfound">
     {{end}}
 
-    <link rel="stylesheet/less" type="text/css" href="/images.less" />
-    <script src="https://cdn.jsdelivr.net/npm/less@4" ></script>
+    {{template "footer" .}}
 </body>
 </html>

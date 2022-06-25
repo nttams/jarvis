@@ -1,7 +1,3 @@
-#task-menu {
-
-}
-
 .btn {
     width: 80px;
     height: 30px;
@@ -11,17 +7,22 @@
     font-weight: bold;
     font-size: 16px;
     cursor: pointer;
+    margin: 10px;
 }
 
-.button {
+.btn {
     .btn();
     background-color: blue;
 }
 
-.button-delete {
+.btn-delete {
     .btn();
     background-color: red;
     float: right;
+}
+
+.btn-delete:disabled {
+    visibility: hidden;
 }
 
 .tag {
@@ -40,10 +41,12 @@
     flex-direction: row;
 
     .task-column {
-        background-color: #F1F1F1;
+        background-color: #c9c9c9;
+        // background-color: grey;
         margin: 10px;
         padding: 2px;
         width: 25vw;
+        border-radius: 10px;
 
         .title-column {
             padding-left: 10px;
@@ -64,7 +67,6 @@
             flex-direction: column;
 
             .task-title {
-                // border: 1px solid #D3D3D3;
                 color: grey;
                 cursor: pointer;
                 font-weight: bold;
@@ -72,9 +74,8 @@
             }
 
             .task-content {
-                // border: 1px solid #D3D3D3;
                 margin: 5px 0px;
-                flex-grow: 1
+                flex-grow: 1;
             }
 
             .date {
@@ -106,7 +107,7 @@
 
             .priority-hot {
                 .tag();
-                background-color: purple;
+                background-color: red;
                 animation: blinker 1s linear infinite;
             }
 
@@ -120,6 +121,7 @@
 }
 
 #overlay {
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -131,6 +133,7 @@
 }
 
 #popup {
+    display: none;
     position: fixed;
     top: 50%;
     left: 50%;
@@ -146,7 +149,15 @@
 
     padding: 20px;
 
+
+
+    .task-font {
+        font-family: 'Assistant', sans-serif;
+        font-size: 16px;
+    }
+
     #task-id {
+        .task-font();
         border: none;
         width: 100%;
         cursor: pointer;
@@ -154,10 +165,12 @@
 
     #task-id-label {
         .tag();
+        .task-font();
         background-color: blue;
     }
 
     #task-title {
+        .task-font();
         border: none;
         border-bottom: 1px solid black;
         width: 80%;
@@ -165,6 +178,7 @@
     }
 
     #task-content {
+        .task-font();
         width: 100%;
         height: 100px;
     }

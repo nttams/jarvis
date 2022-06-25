@@ -1,4 +1,4 @@
-module homer
+module jarvis
 
 go 1.18
 

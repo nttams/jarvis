@@ -181,7 +181,7 @@ func GetFileList(folder string) []string {
 	result := []string{}
 
 	for _, v := range files {
-		result = append(result, path[len("./static"):] + "/" + v.Name())
+		result = append(result, path[len("."):] + "/" + v.Name())
 	}
 	return result
 }
