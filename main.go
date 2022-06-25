@@ -48,7 +48,7 @@ func postTask(w http.ResponseWriter, r *http.Request) {
 }
 
 func getTasks(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("static/tasks.html", "static/tools.html")
+	t, _ := template.ParseFiles("static/html/tasks.html", "static/html/tools.html")
 
 	// todo: sort this
 	tasks := dh.ReadAllTasks()
@@ -65,14 +65,14 @@ func getTasks(w http.ResponseWriter, r *http.Request) {
 
 // todo: make these generic
 func k50Handler(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("static/images.html", "static/tools.html")
+	t, _ := template.ParseFiles("static/html/images.html", "static/html/tools.html")
 	paths := dh.GetFileList("res/k50")
 
 	t.Execute(w, paths)
 }
 
 func tnpdHandler(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("static/images.html", "static/tools.html")
+	t, _ := template.ParseFiles("static/html/images.html", "static/html/tools.html")
 	paths := dh.GetFileList("res/tnpd")
 
 	t.Execute(w, paths)
@@ -85,11 +85,11 @@ func mediaHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func iconHandler(w http.ResponseWriter, r* http.Request) {
-	http.ServeFile(w, r, "./static/favicon.ico")
+	http.ServeFile(w, r, "./static/img/favicon.ico")
 }
 
 func rootHandler(w http.ResponseWriter, r* http.Request) {
-	t, _ := template.ParseFiles("static/index.html", "static/tools.html")
+	t, _ := template.ParseFiles("static/html/index.html", "static/html/tools.html")
 	t.Execute(w, 0)
 }
 

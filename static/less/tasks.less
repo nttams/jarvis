@@ -1,3 +1,5 @@
+@import "variables";
+
 .btn {
     width: 80px;
     height: 30px;
@@ -7,54 +9,83 @@
     font-weight: bold;
     font-size: 16px;
     cursor: pointer;
-    margin: 10px;
 }
 
 .btn {
     .btn();
-    background-color: #6caf6c;
+    background-color: @btn-color;
 }
 
 .btn:hover {
-    background-color: green;
+    background-color: @btn-color-hover;
 }
 
 .btn-delete {
     .btn();
-    background-color: #FF7F7F;
+    background-color: @btn-del-color;
     float: right;
 }
 
 .btn-delete:hover {
-    background-color: red;
+    background-color: @btn-del-color-hover;
 }
 
 .btn-delete:disabled {
     visibility: hidden;
 }
 
+#btn-create {
+    margin-left: auto;
+    margin-right: 10px;;
+}
+
 .tag {
     display: inline-block;
-    width: 40px;
     text-align: center;
     color: white;
     border-radius: 5px;
     font-size: 14px;
     font-weight: bold;
     border: none;
+    letter-spacing: 1.5px;
+    padding: 2px 5px;
+    background-color: grey;
 }
 
-// #main-container {
-//     min-height: 80vh;
-//     flex-grow: 1;
-// }
+.priority-low {
+    .tag();
+    background-color: @priority-low;
+}
+
+.priority-med {
+    .tag();
+    background-color: @priority-med;
+}
+
+.priority-high {
+    .tag();
+    background-color: @priority-high;
+}
+
+.priority-hot {
+    .tag();
+    background-color: @priority-hot;
+
+    animation: blinker 0.5s linear infinite;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}
 
 #tasks {
     display: flex;
     flex-direction: row;
 
     .task-column {
-        background-color: #161B22;
+        background-color: @bg-color-light;
         margin: 10px;
         padding: 2px;
         width: 25vw;
@@ -72,7 +103,7 @@
             border-radius: 10px;
             margin: 10px;
             padding: 10px;
-            background-color: #0D1118;
+            background-color: @bg-color;
             min-height: 100px;
 
             display: flex;
@@ -83,7 +114,7 @@
                 cursor: pointer;
                 font-weight: bold;
                 letter-spacing: 1.2px;
-                font-size:20px;
+                font-size:18px;
             }
 
             .task-title:hover {
@@ -96,37 +127,12 @@
                 flex-grow: 1;
             }
 
+            .task-id {
+                .tag();
+            }
+
             .live-time {
                 .tag();
-                background-color: grey;
-                letter-spacing: 1.5px;
-            }
-
-            .priority-low {
-                .tag();
-                background-color: green;
-            }
-
-            .priority-med {
-                .tag();
-                background-color: orange;
-            }
-
-            .priority-high {
-                .tag();
-                background-color: red;
-            }
-
-            .priority-hot {
-                .tag();
-                background-color: red;
-                animation: blinker 1s linear infinite;
-            }
-
-            @keyframes blinker {
-                50% {
-                    opacity: 0;
-                }
             }
         }
     }
@@ -149,7 +155,7 @@
     position: fixed;
     top: 50%;
     left: 50%;
-    background: #161B22;
+    background: @bg-color-light;
     width: 50%;
     max-width: 500px;
     height: fit-content;
@@ -164,7 +170,7 @@
     .task-font {
         font-family: 'Assistant', sans-serif;
         font-size: 18px;
-        background-color: #0D1118;
+        background-color: @bg-color;
         color: white;
     }
 
@@ -177,8 +183,6 @@
 
     #task-id-label {
         .tag();
-        .task-font();
-        background-color: green;
     }
 
     #task-title {
@@ -227,4 +231,36 @@
 
 .tooltip:hover .tooltiptext {
     visibility: visible;
+}
+
+// radio group
+.radio-group {
+    display: flex;
+    flex-direction: row;
+    margin: 5px;
+}
+.radio-item {
+    width: 100px;
+}
+
+input[type=radio] {
+    visibility: hidden;
+    position: absolute;
+}
+input[type=radio] + label:before {
+    height:16px;
+    width:16px;
+    margin-right: 5px;
+    content: " ";
+    display:inline-block;
+    vertical-align: baseline;
+    border:1px solid #777;
+}
+input[type=radio]:checked + label:before {
+    background:gold;
+}
+
+/* CUSTOM RADIO AND CHECKBOX STYLES */
+input[type=radio] + label:before{
+    border-radius:50%;
 }

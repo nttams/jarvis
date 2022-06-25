@@ -1,12 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Assistant&family=Montserrat:wght@100&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap');
+
+@import "variables";
+
 
 html {
     margin: 0;
     padding: 0;
-    font-family: 'Assistant', sans-serif;
-    font-size: 18px;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 16px;
     color: white;
-    background-color: #0D1118;
+    background-color: @bg-color;
 }
 
 body {
@@ -20,7 +23,9 @@ header {
     padding-top: 10px;
     padding-bottom: 10px;
     color: white;
-    background-color: #161B22;
+    background-color: @bg-color-light;
+    display: flex;
+    flex-direction: row;
     ul {
         list-style-type: none;
         margin: 0;
@@ -55,19 +60,6 @@ header {
     li a:hover {
         .li-item-hover()
     }
-
-    #btn-create {
-        .li-item();
-        background-color: green;
-        padding: 5px 15px;
-        color: white;
-        border-radius: 5px;
-        float:right;
-    }
-
-    #btn-create:hover {
-        .li-item-hover()
-    }
 }
 
 // todo: make the footer always at bottom
@@ -79,7 +71,7 @@ footer {
     // for inside
     display: flex;
     justify-content: center;
-    background-color: #161B22;
+    background-color: @bg-color-light;
 
     #contacts {
         width: 60%;
