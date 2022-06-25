@@ -12,23 +12,7 @@
                 <p class="title-column">Todo</p>
                 {{ range . }}
                     {{if eq .State 0}}
-                    <div class="task">
-                        <span class="task-title" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .State }}, {{ .Priority }})">
-                            T-{{.Id}}: {{.Title}}
-                        </span>
-                        <p class="task-content">{{ .Content }}</p>
-                        <div>
-                            <span class="priority">{{ .Priority }}</span>
-                            <div class="tooltip" style="display: inline-block">
-                                <span class="live-time">
-                                    {{ .CreatedTime }}
-                                </span>
-                                <span class="tooltiptext">
-                                    Last update: {{ .LastUpdateTime }} <br> Created on: {{ .CreatedTime }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                        {{template "task" .}}
                     {{ end }}
                 {{ end }}
             </div>
@@ -37,23 +21,7 @@
                 <p class="title-column">Doing</p>
                 {{ range . }}
                     {{if eq .State 1}}
-                    <div class="task">
-                        <span class="task-title" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .State }}, {{ .Priority }})">
-                            T-{{.Id}}: {{.Title}}
-                        </span>
-                        <p class="task-content">{{ .Content }}</p>
-                        <div>
-                            <span class="priority">{{ .Priority }}</span>
-                            <div class="tooltip" style="display: inline-block">
-                                <span class="live-time">
-                                    {{ .CreatedTime }}
-                                </span>
-                                <span class="tooltiptext">
-                                    Last update: {{ .LastUpdateTime }} <br> Created on: {{ .CreatedTime }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                        {{template "task" .}}
                     {{ end }}
                 {{ end }}
             </div>
@@ -62,23 +30,7 @@
                 <p class="title-column">Onhold</p>
                 {{ range . }}
                     {{if eq .State 2}}
-                    <div class="task">
-                        <span class="task-title" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .State }}, {{ .Priority }})">
-                            T-{{.Id}}: {{.Title}}
-                        </span>
-                        <p class="task-content">{{ .Content }}</p>
-                        <div>
-                            <span class="priority">{{ .Priority }}</span>
-                            <div class="tooltip" style="display: inline-block">
-                                <span class="live-time">
-                                    {{ .CreatedTime }}
-                                </span>
-                                <span class="tooltiptext">
-                                    Last update: {{ .LastUpdateTime }} <br> Created on: {{ .CreatedTime }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                        {{template "task" .}}
                     {{ end }}
                 {{ end }}
             </div>
@@ -87,23 +39,7 @@
                 <p class="title-column">Done</p>
                 {{ range . }}
                     {{if eq .State 3}}
-                    <div class="task">
-                        <span class="task-title" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .State }}, {{ .Priority }})">
-                            T-{{.Id}}: {{.Title}}
-                        </span>
-                        <p class="task-content">{{ .Content }}</p>
-                        <div>
-                            <span class="priority">{{ .Priority }}</span>
-                            <div class="tooltip" style="display: inline-block">
-                                <span class="live-time">
-                                    {{ .CreatedTime }}
-                                </span>
-                                <span class="tooltiptext">
-                                    Last update: {{ .LastUpdateTime }} <br> Created on: {{ .CreatedTime }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                        {{template "task" .}}
                     {{ end }}
                 {{ end }}
             </div>
@@ -156,3 +92,25 @@
     <script src="/static/tasks.js"></script>
 </body>
 </html>
+
+{{define "task"}}
+
+<div class="task">
+    <span class="task-title" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .State }}, {{ .Priority }})">
+        T-{{.Id}}: {{.Title}}
+    </span>
+    <p class="task-content">{{ .Content }}</p>
+    <div>
+        <span class="priority">{{ .Priority }}</span>
+        <div class="tooltip" style="display: inline-block">
+            <span class="live-time">
+                {{ .CreatedTime }}
+            </span>
+            <span class="tooltiptext">
+                Last update: {{ .LastUpdateTime }} <br> Created on: {{ .CreatedTime }}
+            </span>
+        </div>
+    </div>
+</div>
+
+{{end}}

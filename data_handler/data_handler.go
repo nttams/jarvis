@@ -105,6 +105,7 @@ func saveTask(task *Task) error {
 
 	encoded, _ := json.Marshal(task)
 
+	// todo: learn this 0600
 	return os.WriteFile(filename, encoded, 0600)
 }
 
