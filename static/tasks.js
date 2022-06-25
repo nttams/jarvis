@@ -1,4 +1,10 @@
 function init() {
+    initPopup()
+    initPriority()
+    initDate()
+}
+
+function initPopup() {
     const overlay = document.querySelector('#overlay');
     const popup = document.querySelector('#popup');
     const close_popup = document.querySelector('#close-popup');
@@ -10,29 +16,42 @@ function init() {
         overlay.style.display = 'none'
         popup.style.display = 'none'
     };
+}
 
+function initPriority() {
     const priorities = document.querySelectorAll('.priority');
 
-    // todo: too messy?
+    let names = ["Low", "Med", "High", "HOT!!"]
+    let classes = ["priority-low", "priority-med", "priority-high", "priority-hot"]
+
     for (let i = 0; i < priorities.length; ++i) {
-        if (priorities[i].innerHTML == 0) {
-            priorities[i].innerHTML = "Low"
-            priorities[i].classList.add("priority-low")
-        }
+        let priority_index = priorities[i].innerHTML
 
-        if (priorities[i].innerHTML == 1) {
-            priorities[i].innerHTML = "Med"
-            priorities[i].classList.add("priority-med")
-        }
+        priorities[i].classList.add(classes[priority_index])
+        priorities[i].innerHTML = names[priority_index]
+    }
+}
 
-        if (priorities[i].innerHTML == 2) {
-            priorities[i].innerHTML = "High"
-            priorities[i].classList.add("priority-high")
-        }
+function initDate() {
+    const live_times = document.querySelectorAll('.live-time');
 
-        if (priorities[i].innerHTML == 3) {
-            priorities[i].innerHTML = "HOT!!"
-            priorities[i].classList.add("priority-hot")
+    for (let i = 0; i < live_times.length; ++i) {
+        let live_time = Math.abs(
+            Date.now() -
+            new Date(live_times[i].innerHTML)) / 1000
+
+        day = Math.floor(live_time / 86400)
+
+        live_time = live_time - day * 86400
+        hour = Math.floor(live_time / 3600)
+
+        if (day > 0) {
+            live_times[i].innerHTML = day + "d" + hour + "h"
+        } else if (hour > 0) {
+            live_times[i].innerHTML = hour + "h"
+        } else {
+            minute = Math.floor(live_time / 60)
+            live_times[i].innerHTML = minute + "m"
         }
     }
 }
@@ -56,6 +75,8 @@ function editTask(id, title, content, state, priority) {
     if (priority == 1) document.querySelector('#popup').querySelector("#priority_med").checked = true
     if (priority == 2) document.querySelector('#popup').querySelector("#priority_high").checked = true
     if (priority == 3) document.querySelector('#popup').querySelector("#priority_hot").checked = true
+
+    document.querySelector('#popup').querySelector("#task-id-label").innerHTML = "T-" + id
 }
 
 function createTask() {
@@ -69,6 +90,7 @@ function createTask() {
 
     document.querySelector('#popup').querySelector("#state_todo").checked = true
     document.querySelector('#popup').querySelector("#priority_low").checked = true
+    document.querySelector('#popup').querySelector("#task-id-label").innerHTML = "T-"
 }
 
 numTodo = document.querySelector("#todo").childElementCount - 1
@@ -76,9 +98,9 @@ numDoing = document.querySelector("#doing").childElementCount - 1
 numOnhold = document.querySelector("#onhold").childElementCount - 1
 numDone = document.querySelector("#done").childElementCount - 1
 
-document.querySelector("#todo").querySelector(".title-column").innerHTML = "Todo (" + numTodo + ")"
-document.querySelector("#doing").querySelector(".title-column").innerHTML = "Doing (" + numDoing + ")"
-document.querySelector("#onhold").querySelector(".title-column").innerHTML = "Onhold (" + numOnhold + ")"
-document.querySelector("#done").querySelector(".title-column").innerHTML = "Done (" + numDone + ")"
+document.querySelector("#todo").querySelector(".title-column").innerHTML = "Todo " + numTodo
+document.querySelector("#doing").querySelector(".title-column").innerHTML = "Doing " + numDoing
+document.querySelector("#onhold").querySelector(".title-column").innerHTML = "Onhold " + numOnhold
+document.querySelector("#done").querySelector(".title-column").innerHTML = "Done " + numDone
 
 setTimeout(init, 100)

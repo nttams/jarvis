@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -65,16 +66,22 @@ func getTasks(w http.ResponseWriter, r *http.Request) {
 // todo: make these generic
 func k50Handler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("static/images.html")
-	paths := dh.ReadAllImagePaths("k50")
+	paths := dh.GetFileList("res/k50")
 
 	t.Execute(w, paths)
 }
 
 func tnpdHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("static/images.html")
-	paths := dh.ReadAllImagePaths("tnpd")
+	paths := dh.GetFileList("res/tnpd")
 
 	t.Execute(w, paths)
+}
+
+// todo:
+func mediaHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("mediaHandler")
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 func main() {
@@ -82,6 +89,7 @@ func main() {
 	http.HandleFunc("/k50/", k50Handler)
 	http.HandleFunc("/tnpd/", tnpdHandler)
 	http.HandleFunc("/delete-task/", deleteHandler)
+	http.HandleFunc("/media/", mediaHandler)
 
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fs)

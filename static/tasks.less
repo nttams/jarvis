@@ -1,3 +1,40 @@
+#task-menu {
+
+}
+
+.btn {
+    width: 80px;
+    height: 30px;
+    border: none;
+    border-radius:5px;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.button {
+    .btn();
+    background-color: blue;
+}
+
+.button-delete {
+    .btn();
+    background-color: red;
+    float: right;
+}
+
+.tag {
+    display: inline-block;
+    width: 40px;
+    text-align: center;
+    color: white;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+}
+
 #tasks {
     display: flex;
     flex-direction: row;
@@ -16,54 +53,59 @@
         }
 
         .task {
-            border: 2px solid #D3D3D3;
+            border: 1px solid #D3D3D3;
+            border-radius: 10px;
             margin: 10px;
-            padding: 5px;
-            // height: 150px;
+            padding: 10px;
             background-color: white;
+            min-height: 100px;
+
+            display: flex;
+            flex-direction: column;
 
             .task-title {
+                // border: 1px solid #D3D3D3;
+                color: grey;
                 cursor: pointer;
                 font-weight: bold;
                 letter-spacing: 1.2px;
             }
 
-            .date {
-                margin: 0px;
-                font-size: 12px;
-                color: grey;
-                // letter-spacing: 0.5px;
+            .task-content {
+                // border: 1px solid #D3D3D3;
+                margin: 5px 0px;
+                flex-grow: 1
             }
 
-            .priority {
-                display: inline-block;
-                width: 40px;
-                text-align: center;
-                color: white;
-                border-radius: 5px;
-                font-size: 14px;
-                font-weight: bold;
-                border: none;
+            .date {
+                // margin: 0px;
+                font-size: 12px;
+                color: grey;
+            }
 
+            .live-time {
+                .tag();
+                background-color: black;
+                letter-spacing: 1.5px;
             }
 
             .priority-low {
-                .priority();
+                .tag();
                 background-color: green;
             }
 
             .priority-med {
-                .priority();
+                .tag();
                 background-color: orange;
             }
 
             .priority-high {
-                .priority();
+                .tag();
                 background-color: red;
             }
 
             .priority-hot {
-                .priority();
+                .tag();
                 background-color: purple;
                 animation: blinker 1s linear infinite;
             }
@@ -95,21 +137,14 @@
     background: white;
     width: 50%;
     max-width: 500px;
-    height: 50%;
+    height: fit-content;
     min-height: 100px;
-    max-height: 250px;
     transform: translate(-50%, -50%);
     z-index:200;
     border: none;
     border-radius: 10px;
 
-    padding: 10px;
-
-    #close-popup {
-        float: right;
-        padding: 10px;
-        cursor: pointer;
-    }
+    padding: 20px;
 
     #task-id {
         border: none;
@@ -117,21 +152,28 @@
         cursor: pointer;
     }
 
+    #task-id-label {
+        .tag();
+        background-color: blue;
+    }
+
     #task-title {
         border: none;
         border-bottom: 1px solid black;
-        width: 50%;
+        width: 80%;
         font-weight: bold;
     }
 
     #task-content {
         width: 100%;
-        height: 60px;
+        height: 100px;
     }
 
-    .button {
-        width: 80px;
-        height: 40px;
+    #close-popup {
+        float: right;
+        border: none;
+        cursor: pointer;
+        background: none
     }
 
     .form-item {
@@ -139,3 +181,24 @@
     }
 }
 
+.tooltip {
+    position: relative;
+    display: inline-block;
+
+    .tooltiptext {
+        width: 150px;
+        padding: 7px 7px;
+        border-radius: 10px;
+        background-color: #505050;
+        color: white;
+        font-size:12px;
+        text-align: left;
+        visibility: hidden;
+        position: absolute;
+        z-index: 1;
+    }
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}

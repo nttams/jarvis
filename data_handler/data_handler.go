@@ -59,11 +59,17 @@ func convertTimeToString(t *time.Time) string {
 	year, month, date := t.Date()
 	hour, min, _ := t.Clock()
 
-	return strconv.Itoa(date) + "/" +
+	// minute should have 2 digits, it's prettier
+	min_str := strconv.Itoa(min)
+	if len(min_str) == 1 {
+		min_str = "0" + min_str
+	}
+
+	return strconv.Itoa(year) + "/" +
 		strconv.Itoa(int(month)) + "/" +
-		strconv.Itoa(year) + " "+
+		strconv.Itoa(date) + " " +
 		strconv.Itoa(hour) + ":" +
-		strconv.Itoa(min)
+		min_str
 }
 
 func (s State) ToString() string {
@@ -133,7 +139,7 @@ func CreateNewTask(title string, content string, state int, priority int) {
 }
 
 func UpdateTask(id int, title string, content string, state int, priority int) {
-	task := ReadTask(id)
+	task := readTask(id)
 	task.Title = title;
 	task.Content = content;
 	task.State = State(state);
@@ -142,7 +148,7 @@ func UpdateTask(id int, title string, content string, state int, priority int) {
 	saveTask(&task)
 }
 
-func ReadTask(id int) Task {
+func readTask(id int) Task {
 	encoded, _ := os.ReadFile(getFilename(id))
 	var task Task
 	_ = json.Unmarshal(encoded, &task)
@@ -166,8 +172,8 @@ func ReadAllTasks() []Task {
 	return result
 }
 
-func ReadAllImagePaths(folder string) []string {
-	path := "./static/res/" + folder
+func GetFileList(folder string) []string {
+	path := "./static/" + folder
 	file, _ := os.Open(path)
 
 	files, _ := file.Readdir(0)
