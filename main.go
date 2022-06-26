@@ -1,7 +1,6 @@
 package main
 
 import (
-	// "fmt"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -47,21 +46,10 @@ func postTask(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/tasks/", http.StatusFound)
 }
 
-// todo: you don't distingush well between server and client sides rendering. Fix that
 func getTasks(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("static/html/tasks.html", "static/html/templates.html")
 
-	// todo: sort this
-	tasks := dh.ReadAllTasks()
-
-	tasksForHtml := []dh.TaskForHtml{}
-
-	for _, task := range tasks {
-		taskForHtml := dh.ConvertTaskToTaskForHtml(&task)
-		tasksForHtml = append(tasksForHtml, taskForHtml)
-	}
-
-	t.Execute(w, tasksForHtml)
+	t.Execute(w, dh.GetTasksForTmpl())
 }
 
 // todo: make these generic

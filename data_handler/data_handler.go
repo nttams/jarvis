@@ -36,7 +36,7 @@ func (a ByTask) Less(i, j int) bool {
 	return false;
 }
 
-type TaskForHtml struct {
+type TaskForTmpl struct {
 	Id int
 	Project string
 	Title string
@@ -45,6 +45,17 @@ type TaskForHtml struct {
 	Priority Priority
 	CreatedTime string
 	LastUpdateTime string
+	LivedTime string
+}
+
+type TasksForTmpl struct {
+	Todo []TaskForTmpl
+	Doing []TaskForTmpl
+	Done []TaskForTmpl
+	NumberTodo int
+	NumberDoing int
+	NumberDone int
+	NumberDoneFiltered int
 }
 
 type State int
@@ -61,7 +72,33 @@ const (
 	High
 )
 
-func ConvertTaskToTaskForHtml(task *Task) (result TaskForHtml) {
+func GetTasksForTmpl() (result TasksForTmpl) {
+	tasks := readAllTasks()
+
+	for _, task := range tasks {
+		taskForHtml := ConvertTaskToTaskForTmpl(&task)
+
+		switch taskForHtml.State {
+			case Todo:
+				result.Todo = append(result.Todo, taskForHtml)
+				result.NumberTodo++
+			case Doing:
+				result.Doing = append(result.Doing, taskForHtml)
+				result.NumberDoing++
+			case Done:
+				result.Done = append(result.Done, taskForHtml)
+				result.NumberDone++
+				// todo
+				result.NumberDoneFiltered++
+			default:
+				panic("invalid state")
+		}
+	}
+
+	return
+}
+
+func ConvertTaskToTaskForTmpl(task *Task) (result TaskForTmpl) {
 	result.Id = task.Id
 	result.Project = task.Project
 	result.Title = task.Title
@@ -70,8 +107,45 @@ func ConvertTaskToTaskForHtml(task *Task) (result TaskForHtml) {
 	result.Priority = task.Priority
 	result.CreatedTime = convertTimeToString(&task.CreatedTime)
 	result.LastUpdateTime = convertTimeToString(&task.LastUpdateTime)
+	result.LivedTime = generatePrettyAgeForTag(task.CreatedTime)
 
 	return
+}
+
+func generatePrettyAgeForTag(createdDate time.Time) string {
+	var live_time int64 = time.Now().Sub(createdDate).Milliseconds() / 1000
+
+    year := int64(live_time / 31536000)
+    live_time = live_time - year * 31536000
+
+    month := int64(live_time / 2592000)
+    live_time = live_time - month * 2592000
+
+    day := int64(live_time / 86400)
+    live_time = live_time - day * 86400
+
+    hour := int64(live_time / 3600)
+    live_time = live_time - hour * 3600
+
+    minute := int64(live_time / 60)
+
+    if (year > 0) {
+        return strconv.FormatInt(year, 10) + "y"
+    }
+
+    if (month > 0) {
+        return strconv.FormatInt(month, 10) + "M"
+    }
+
+    if (day > 0) {
+        return strconv.FormatInt(day, 10) + "d"
+    }
+
+    if (hour > 0) {
+        return strconv.FormatInt(hour, 10) + "h"
+    }
+
+    return strconv.FormatInt(minute, 10) + "m"
 }
 
 func convertTimeToString(t *time.Time) string {
@@ -172,7 +246,7 @@ func readTask(id int) Task {
 	return task
 }
 
-func ReadAllTasks() []Task {
+func readAllTasks() []Task {
 	path := "./static/data"
 	file, _ := os.Open(path)
 
