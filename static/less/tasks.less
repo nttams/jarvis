@@ -49,7 +49,8 @@
     border: none;
     letter-spacing: 1.5px;
     padding: 2px 5px;
-    background-color: grey;
+    background-color: @bg-color-light;
+    margin: 2px 0px;
 }
 
 .priority-low {
@@ -99,12 +100,12 @@
         }
 
         .task {
-            border: 0.1px solid grey;
+            // border: 1px solid grey;
             border-radius: 10px;
             margin: 10px;
             padding: 10px;
             background-color: @bg-color;
-            min-height: 100px;
+            min-height: 120px;
 
             display: flex;
             flex-direction: column;
@@ -134,6 +135,11 @@
             .live-time {
                 .tag();
             }
+
+            .task-project {
+                .tag();
+                background-color: @task-tag-color;
+            }
         }
     }
 }
@@ -155,23 +161,22 @@
     position: fixed;
     top: 50%;
     left: 50%;
-    background: @bg-color-light;
     width: 50%;
-    max-width: 500px;
     height: fit-content;
-    min-height: 100px;
+    padding: 20px;
     transform: translate(-50%, -50%);
     z-index:200;
     border: none;
     border-radius: 10px;
-
-    padding: 20px;
+    background: @bg-color-light;
 
     .task-font {
-        font-family: 'Assistant', sans-serif;
+        font-family: 'Ubuntu', sans-serif;
         font-size: 18px;
         background-color: @bg-color;
         color: white;
+        padding: 5px;
+        border: none;
     }
 
     #task-id {
@@ -181,29 +186,46 @@
         cursor: pointer;
     }
 
-    #task-id-label {
-        .tag();
-    }
-
-    #task-title {
-        .task-font();
-        border: none;
-        border-bottom: 1px solid black;
-        width: 80%;
-        font-weight: bold;
-    }
-
     #task-content {
         .task-font();
         width: 100%;
         height: 100px;
     }
 
-    #close-popup {
-        float: right;
-        border: none;
-        cursor: pointer;
-        background: none
+    #popup-header {
+        height: fit-content;
+        display: flex;
+        flex-direction: row;
+
+        .popup-header {
+            .task-font();
+            font-weight: bold;
+            border: none;
+            margin-left: 5px;
+        }
+
+        #task-id-label {
+            .popup-header();
+            background: none;
+        }
+
+        #task-project {
+            .popup-header();
+            width: 25%;
+        }
+
+        #task-title {
+            .popup-header();
+            flex-grow: 1;
+        }
+
+        #close-popup {
+            float: right;
+            border: none;
+            cursor: pointer;
+            background: none;
+            margin-right: 0;
+        }
     }
 
     .form-item {
@@ -216,7 +238,7 @@
     display: inline-block;
 
     .tooltiptext {
-        width: 150px;
+        width: 200px;
         padding: 7px 7px;
         border-radius: 10px;
         background-color: #505050;

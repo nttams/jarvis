@@ -50,14 +50,16 @@
         <div id="popup">
             <form id="update-form" action="/tasks/" method="post">
                 <input type="hidden" id="task-id" name="id">
-                <input placeholder="title goes here" type="text" class="form-item" id="task-title" name="title">
-                <button type="button" id="close-popup">❌</button>
+
+                <div id="popup-header">
+                    <label id="task-id-label"></label>
+                    <input placeholder="project" type="text" id="task-project" name="project">
+                    <input placeholder="title" type="text" id="task-title" name="title">
+                    <button type="button" id="close-popup">❌</button>
+                </div>
 
                 <br>
-                <textarea placeholder="content goes here" class="form-item" id="task-content" name="content"></textarea>
-
-                <label id="task-id-label"></label>
-                <span id="popup-priority"></span>
+                <textarea placeholder="content" class="form-item" id="task-content" name="content"></textarea>
 
                 <div class="radio-group">
                     <div class="radio-item">
@@ -113,25 +115,27 @@
 </body>
 </html>
 
-{{define "task"}}
+{{ define "task" }}
 
 <div class="task">
-    <span class="task-title" onclick="editTask({{ .Id }}, {{ .Title }}, {{ .Content }}, {{ .State }}, {{ .Priority }})">
+    <span class="task-title" onclick="editTask({{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .State }}, {{ .Priority }})">
         {{.Title}}
     </span>
     <p class="task-content">{{ .Content }}</p>
     <div>
-        <span class="task-id">T-{{ .Id }}</span>
-        <div class="tooltip" style="display: inline-block">
-            <span class="live-time">
-                {{ .CreatedTime }}
+            <span class="task-id">T-{{ .Id }}</span>
+
+            <span class="task-project">{{ .Project }}</span>
+            <span class="priority">{{ .Priority }}</span>
+            <span class="tooltip">
+                <span class="live-time">
+                    {{ .CreatedTime }}
+                </span>
+                <span class="tooltiptext">
+                    Last update: {{ .LastUpdateTime }} <br> Created on: {{ .CreatedTime }}
+                </span>
             </span>
-            <span class="tooltiptext">
-                Last update: {{ .LastUpdateTime }} <br> Created on: {{ .CreatedTime }}
-            </span>
-        </div>
-        <span class="priority">{{ .Priority }}</span>
     </div>
 </div>
 
-{{end}}
+{{ end }}

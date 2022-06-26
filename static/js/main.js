@@ -1,3 +1,5 @@
+// todo:move all this to config
+
 friends_lengths = [24, 24, 25, 24, 24, 25, 24, 24, 23, 17]
 number_of_ee = 23
 

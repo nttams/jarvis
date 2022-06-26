@@ -7,8 +7,10 @@ import (
 	"strconv"
 )
 
+// todo: hide these fields
 type Task struct {
 	Id int
+	Project string
 	Title string
 	Content string
 	State State
@@ -19,6 +21,7 @@ type Task struct {
 
 type TaskForHtml struct {
 	Id int
+	Project string
 	Title string
 	Content string
 	State State
@@ -45,6 +48,7 @@ const (
 
 func ConvertTaskToTaskForHtml(task *Task) (result TaskForHtml) {
 	result.Id = task.Id
+	result.Project = task.Project
 	result.Title = task.Title
 	result.Content = task.Content
 	result.State = task.State
@@ -131,16 +135,17 @@ func getAFreeId() int {
 	return max + 1;
 }
 
-func CreateNewTask(title string, content string, state int, priority int) {
+func CreateNewTask(project string, title string, content string, state int, priority int) {
 	id := getAFreeId()
 
 	now := time.Now()
-	task := Task {id, title, content, State(state), Priority(priority), now, now}
+	task := Task {id, title, content, project, State(state), Priority(priority), now, now}
 	saveTask(&task)
 }
 
-func UpdateTask(id int, title string, content string, state int, priority int) {
+func UpdateTask(id int, project string, title string, content string, state int, priority int) {
 	task := readTask(id)
+	task.Project = project;
 	task.Title = title;
 	task.Content = content;
 	task.State = State(state);

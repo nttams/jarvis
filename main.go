@@ -32,21 +32,22 @@ func postTask(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() //todo: error handling
 
 	id, _ := strconv.Atoi(r.PostForm["id"][0])
-
+	project := r.PostForm["project"][0]
 	title := r.PostForm["title"][0]
 	content := r.PostForm["content"][0]
 	state, _ := strconv.Atoi(r.PostForm["state"][0])
 	priority, _ := strconv.Atoi(r.PostForm["priority"][0])
 
 	if id == -1 {
-		dh.CreateNewTask(title, content, state, priority)
+		dh.CreateNewTask(project, title, content, state, priority)
 	} else {
-		dh.UpdateTask(id, title, content, state, priority)
+		dh.UpdateTask(id, project, title, content, state, priority)
 	}
 
 	http.Redirect(w, r, "/tasks/", http.StatusFound)
 }
 
+// todo: you don't distingush well between server and client sides rendering. Fix that
 func getTasks(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("static/html/tasks.html", "static/html/tools.html")
 

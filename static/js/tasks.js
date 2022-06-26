@@ -4,14 +4,28 @@ function init() {
     initDate()
     initCreateButtion()
     initTitles()
+    initHotKeys()
 }
 
 const overlay = document.querySelector("#overlay");
 const popup = document.querySelector("#popup");
 const close_popup = document.querySelector("#close-popup");
 
-let names = ["Low", "Med", "High", "HOT!!"]
+let names = ["Low", "Med", "High", "HOT!"]
 let classes = ["priority-low", "priority-med", "priority-high", "priority-hot"]
+
+function initHotKeys() {
+    window.onload=function() {
+        document.onkeyup=key_event;
+    }
+}
+
+function key_event(e) {
+    console.log(e.keyCode);
+    if (e.keyCode == 27) {
+        hidePopup()
+    }
+}
 
 function initTitles() {
     numTodo = document.querySelector("#todo").childElementCount - 1
@@ -37,10 +51,7 @@ function initCreateButtion() {
 }
 
 function initPopup() {
-    close_popup.onclick = () => {
-        overlay.style.display = "none"
-        popup.style.display = "none"
-    };
+    close_popup.onclick = hidePopup;
 }
 
 function initPriority() {
@@ -79,11 +90,13 @@ function initDate() {
     }
 }
 
-function editTask(id, title, content, state, priority) {
+function editTask(id, project, title, content, state, priority) {
     showPopup()
 
     popup.querySelector("#task-id").value = id
+    popup.querySelector("#task-project").value = project
     popup.querySelector("#task-title").value = title
+    popup.querySelector("#task-content").value = content
     popup.querySelector("#task-content").value = content
     popup.querySelector("#task-id-delete").value = id
 
@@ -97,20 +110,9 @@ function editTask(id, title, content, state, priority) {
     if (priority == 2) popup.querySelector("#priority_high").checked = true
     if (priority == 3) popup.querySelector("#priority_hot").checked = true
 
-    updatePriority()
-
     popup.querySelector("#task-id-label").style.display = "inline"
     popup.querySelector("#task-id-label").innerHTML = "T" + id
     popup.querySelector(".btn-delete").disabled = false
-}
-
-function updatePriority() {
-    current_choice = document.querySelector("input[name='priority']:checked").value
-
-    let popup_priority = document.querySelector("#popup-priority");
-
-    popup_priority.className = classes[current_choice]
-    popup_priority.innerHTML = names[current_choice]
 }
 
 function createTask() {
@@ -126,13 +128,16 @@ function createTask() {
     popup.querySelector("#task-id-label").style.display = "none"
 
     popup.querySelector(".btn-delete").disabled = true
-
-    updatePriority()
 }
 
 function showPopup() {
     overlay.style.display = "block"
     popup.style.display = "block"
+}
+
+function hidePopup() {
+    overlay.style.display = "none"
+    popup.style.display = "none"
 }
 
 init()
