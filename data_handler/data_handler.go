@@ -20,12 +20,33 @@ type Task struct {
 	LastUpdateTime time.Time
 }
 
-type ByTask []Task
-func (a ByTask) Len() int           { return len(a) }
-func (a ByTask) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+// todo and doing states use this
+type ByPriority []Task
+func (a ByPriority) Len() int           { return len(a) }
+func (a ByPriority) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
 // priority (dec) --> created time (inc) --> id (inc)
-func (a ByTask) Less(i, j int) bool {
+func (a ByPriority) Less(i, j int) bool {
+	if a[i].Priority < a[j].Priority { return true }
+	if a[i].Priority > a[j].Priority { return false }
+
+	if a[i].CreatedTime.Before(a[j].CreatedTime) { return false }
+	if a[i].CreatedTime.After(a[j].CreatedTime) { return true }
+
+	if a[i].Id > a[j].Id { return true }
+	return false;
+}
+
+// done state uses this
+type ByLastUpdate []Task
+func (a ByLastUpdate) Len() int           { return len(a) }
+func (a ByLastUpdate) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
+// last update (dec) --> priority (dec) --> created time (inc) --> id (inc)
+func (a ByLastUpdate) Less(i, j int) bool {
+	if a[i].LastUpdateTime.Before(a[j].LastUpdateTime) { return true }
+	if a[i].LastUpdateTime.After(a[j].LastUpdateTime) { return false }
+
 	if a[i].Priority < a[j].Priority { return true }
 	if a[i].Priority > a[j].Priority { return false }
 
@@ -75,26 +96,45 @@ const (
 func GetTasksForTmpl() (result TasksForTmpl) {
 	tasks := readAllTasks()
 
-	for _, task := range tasks {
-		taskForHtml := ConvertTaskToTaskForTmpl(&task)
+	todo, doing, done := getTaskInGroups(tasks)
 
-		switch taskForHtml.State {
+	sort.Sort(sort.Reverse(ByPriority(todo)))
+	sort.Sort(sort.Reverse(ByPriority(doing)))
+	sort.Sort(sort.Reverse(ByLastUpdate(done)))
+
+	for _, task := range todo {
+		result.Todo = append(result.Todo, ConvertTaskToTaskForTmpl(&task))
+	}
+
+	for _, task := range doing {
+		result.Doing = append(result.Doing, ConvertTaskToTaskForTmpl(&task))
+	}
+
+	for _, task := range done {
+		result.Done = append(result.Done, ConvertTaskToTaskForTmpl(&task))
+	}
+
+	result.NumberTodo = len(todo)
+	result.NumberDoing = len(doing)
+	result.NumberDone = len(done)
+	result.NumberDoneFiltered = len(done)
+
+	return
+}
+
+func getTaskInGroups(tasks []Task) (todo []Task, doing []Task, done[]Task){
+	for _, task := range tasks {
+		switch task.State {
 			case Todo:
-				result.Todo = append(result.Todo, taskForHtml)
-				result.NumberTodo++
+				todo = append(todo, task)
 			case Doing:
-				result.Doing = append(result.Doing, taskForHtml)
-				result.NumberDoing++
+				doing = append(doing, task)
 			case Done:
-				result.Done = append(result.Done, taskForHtml)
-				result.NumberDone++
-				// todo
-				result.NumberDoneFiltered++
+				done = append(done, task)
 			default:
 				panic("invalid state")
 		}
 	}
-
 	return
 }
 
@@ -260,8 +300,6 @@ func readAllTasks() []Task {
 		_ = json.Unmarshal(encoded, &task)
 		result = append(result, task)
 	}
-
-	sort.Sort(sort.Reverse(ByTask(result)))
 
 	return result
 }

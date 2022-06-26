@@ -34,20 +34,24 @@ function initPriority() {
     for (let i = 0; i < priorities.length; ++i) {
         let priority_index = priorities[i].innerHTML
 
-        priorities[i].classList.add(classes[priority_index])
         priorities[i].innerHTML = names[priority_index]
+        priorities[i].classList.add(classes[priority_index])
+
+        // high priority tasks in done column don't blink
+        if ((priority_index == 2) && !priorities[i].classList.contains("state-2")) {
+            priorities[i].classList.add("priority-blink")
+        }
+
     }
 }
 
-function editTask(id, state, priority) {
+function editTask(id, project, title, content, state, priority) {
     showPopup()
 
-    let task = document.querySelector("#task-" + id)
-
     popup.querySelector("#task-id").value = id
-    popup.querySelector("#task-project").value = task.querySelector(".task-project").innerHTML
-    popup.querySelector("#task-title").value =  task.querySelector(".task-title").innerHTML
-    popup.querySelector("#task-content").value =  task.querySelector(".task-content").innerHTML
+    popup.querySelector("#task-project").value = project
+    popup.querySelector("#task-title").value =  title
+    popup.querySelector("#task-content").value =  content
 
     popup.querySelector("#task-id-delete").value = id
 

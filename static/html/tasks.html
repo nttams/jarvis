@@ -98,7 +98,7 @@
 {{ define "task" }}
 
 <div class="task" id="task-{{ .Id }}">
-    <span class="task-title" onclick="editTask( {{ .Id }}, {{ .State }}, {{ .Priority }})">
+    <span class="task-title" onclick="editTask( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .State }}, {{ .Priority }})">
         {{.Title}}
     </span>
     <p class="task-content">{{ .Content }}</p>
@@ -113,7 +113,7 @@
                     Last update: {{ .LastUpdateTime }} <br> Created on: {{ .CreatedTime }}
                 </span>
             </span>
-            <span class="priority">{{ .Priority }}</span>
+            <span class="priority state-{{.State}}">{{ .Priority }}</span>
     </div>
 </div>
 
