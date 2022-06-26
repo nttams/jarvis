@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"time"
 	"strconv"
+	"sort"
 )
 
 // todo: hide these fields
@@ -17,6 +18,22 @@ type Task struct {
 	Priority Priority
 	CreatedTime time.Time
 	LastUpdateTime time.Time
+}
+
+type ByTask []Task
+func (a ByTask) Len() int           { return len(a) }
+func (a ByTask) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
+// priority (dec) --> created time (inc) --> id (inc)
+func (a ByTask) Less(i, j int) bool {
+	if a[i].Priority < a[j].Priority { return true }
+	if a[i].Priority > a[j].Priority { return false }
+
+	if a[i].CreatedTime.Before(a[j].CreatedTime) { return false }
+	if a[i].CreatedTime.After(a[j].CreatedTime) { return true }
+
+	if a[i].Id > a[j].Id { return true }
+	return false;
 }
 
 type TaskForHtml struct {
@@ -34,7 +51,6 @@ type State int
 const (
 	Todo State = iota
 	Doing
-	Onhold
 	Done
 )
 
@@ -43,7 +59,6 @@ const (
 	Low Priority = iota
 	Med
 	High
-	Hot
 )
 
 func ConvertTaskToTaskForHtml(task *Task) (result TaskForHtml) {
@@ -82,8 +97,6 @@ func (s State) ToString() string {
 		return "todo"
 	case Doing:
 		return "doing"
-	case Onhold:
-		return "onhold"
 	case Done:
 		return "done"
 	}
@@ -98,8 +111,6 @@ func (p Priority) ToString() string {
 		return "Med"
 	case High:
 		return "High"
-	case Hot:
-		return "Hot"
 	}
 	return "unknown"
 }
@@ -139,7 +150,7 @@ func CreateNewTask(project string, title string, content string, state int, prio
 	id := getAFreeId()
 
 	now := time.Now()
-	task := Task {id, title, content, project, State(state), Priority(priority), now, now}
+	task := Task {id, project, title, content, State(state), Priority(priority), now, now}
 	saveTask(&task)
 }
 
@@ -175,6 +186,9 @@ func ReadAllTasks() []Task {
 		_ = json.Unmarshal(encoded, &task)
 		result = append(result, task)
 	}
+
+	sort.Sort(sort.Reverse(ByTask(result)))
+
 	return result
 }
 

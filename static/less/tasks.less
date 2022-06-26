@@ -13,21 +13,21 @@
 
 .btn {
     .btn();
-    background-color: @btn-color;
+    background-color: @btn;
 }
 
 .btn:hover {
-    background-color: @btn-color-hover;
+    background-color: @btn-hover;
 }
 
 .btn-delete {
     .btn();
-    background-color: @btn-del-color;
+    background-color: @btn-del;
     float: right;
 }
 
 .btn-delete:hover {
-    background-color: @btn-del-color-hover;
+    background-color: @btn-del-hover;
 }
 
 .btn-delete:disabled {
@@ -49,7 +49,7 @@
     border: none;
     letter-spacing: 1.5px;
     padding: 2px 5px;
-    background-color: @bg-color-light;
+    background-color: @background-dark;
     margin: 2px 0px;
 }
 
@@ -66,13 +66,7 @@
 .priority-high {
     .tag();
     background-color: @priority-high;
-}
-
-.priority-hot {
-    .tag();
-    background-color: @priority-hot;
-
-    animation: blinker 0.5s linear infinite;
+    animation: blinker 1s linear infinite;
 }
 
 @keyframes blinker {
@@ -86,11 +80,11 @@
     flex-direction: row;
 
     .task-column {
-        background-color: @bg-color-light;
+        background-color: @background-dark;
         margin: 10px;
         padding: 2px;
-        width: 25vw;
         border-radius: 10px;
+        flex-basis: 100%;
 
         .title-column {
             padding-left: 10px;
@@ -104,7 +98,7 @@
             border-radius: 10px;
             margin: 10px;
             padding: 10px;
-            background-color: @bg-color;
+            background-color: @background-light;
             min-height: 120px;
 
             display: flex;
@@ -138,7 +132,7 @@
 
             .task-project {
                 .tag();
-                background-color: @task-tag-color;
+                background-color: @task-tag;
             }
         }
     }
@@ -168,15 +162,31 @@
     z-index:200;
     border: none;
     border-radius: 10px;
-    background: @bg-color-light;
+    background: @background-dark;
+    border: 1px solid white;
+
+    padding-top: 0;
+
+    #update-form {
+        display: flex;
+        flex-direction: column;
+    }
 
     .task-font {
         font-family: 'Ubuntu', sans-serif;
         font-size: 18px;
-        background-color: @bg-color;
+        background-color: @background-light;
         color: white;
         padding: 5px;
         border: none;
+        border-radius: 10px;
+    }
+
+    .popup-task-related {
+        .task-font();
+        font-weight: bold;
+        border: none;
+        margin-left: 5px;
     }
 
     #task-id {
@@ -190,41 +200,43 @@
         .task-font();
         width: 100%;
         height: 100px;
+        resize: none;
     }
 
     #popup-header {
-        height: fit-content;
-        display: flex;
-        flex-direction: row;
-
-        .popup-header {
-            .task-font();
-            font-weight: bold;
-            border: none;
-            margin-left: 5px;
-        }
+        margin: 0;
+        padding: 0;
+        margin: 30px 0;
 
         #task-id-label {
-            .popup-header();
+            .popup-task-related();
             background: none;
-        }
-
-        #task-project {
-            .popup-header();
-            width: 25%;
-        }
-
-        #task-title {
-            .popup-header();
-            flex-grow: 1;
+            letter-spacing: 1.5px;
         }
 
         #close-popup {
+            display: block;
             float: right;
             border: none;
             cursor: pointer;
             background: none;
             margin-right: 0;
+        }
+    }
+
+    #popup-task-related {
+        height: fit-content;
+        display: flex;
+        flex-direction: row;
+
+        #task-project {
+            .popup-task-related();
+            width: 25%;
+        }
+
+        #task-title {
+            .popup-task-related();
+            flex-grow: 1;
         }
     }
 
@@ -255,7 +267,6 @@
     visibility: visible;
 }
 
-// radio group
 .radio-group {
     display: flex;
     flex-direction: row;
@@ -276,13 +287,18 @@ input[type=radio] + label:before {
     content: " ";
     display:inline-block;
     vertical-align: baseline;
-    border:1px solid #777;
-}
-input[type=radio]:checked + label:before {
-    background:gold;
+    // border:1px solid black;
+    background-color: white;
 }
 
-/* CUSTOM RADIO AND CHECKBOX STYLES */
+input[type=radio]:hover + label:before{
+    background: @radio-btn-hover;
+}
+
+input[type=radio]:checked + label:before {
+    background: @radio-btn;
+}
+
 input[type=radio] + label:before{
-    border-radius:50%;
+    border-radius: 50%;
 }

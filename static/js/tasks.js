@@ -11,8 +11,8 @@ const overlay = document.querySelector("#overlay");
 const popup = document.querySelector("#popup");
 const close_popup = document.querySelector("#close-popup");
 
-let names = ["Low", "Med", "High", "HOT!"]
-let classes = ["priority-low", "priority-med", "priority-high", "priority-hot"]
+let names = ["low", "med", "high"]
+let classes = ["priority-low", "priority-med", "priority-high"]
 
 function initHotKeys() {
     window.onload=function() {
@@ -30,13 +30,11 @@ function key_event(e) {
 function initTitles() {
     numTodo = document.querySelector("#todo").childElementCount - 1
     numDoing = document.querySelector("#doing").childElementCount - 1
-    numOnhold = document.querySelector("#onhold").childElementCount - 1
     numDone = document.querySelector("#done").childElementCount - 1
 
-    document.querySelector("#todo").querySelector(".title-column").innerHTML = "Todo (" + numTodo + ")"
-    document.querySelector("#doing").querySelector(".title-column").innerHTML = "Doing (" + numDoing + ")"
-    document.querySelector("#onhold").querySelector(".title-column").innerHTML = "Onhold (" + numOnhold + ")"
-    document.querySelector("#done").querySelector(".title-column").innerHTML = "Done (" + numDone + ")"
+    document.querySelector("#todo").querySelector(".title-column").innerHTML = "todo (" + numTodo + ")"
+    document.querySelector("#doing").querySelector(".title-column").innerHTML = "doing (" + numDoing + ")"
+    document.querySelector("#done").querySelector(".title-column").innerHTML = "done (" + numDone + ")"
 }
 
 function initCreateButtion() {
@@ -68,26 +66,45 @@ function initPriority() {
 function initDate() {
     const live_times = document.querySelectorAll(".live-time");
 
-    // todo: this will not survive long-live task
     for (let i = 0; i < live_times.length; ++i) {
-        let live_time = Math.abs(
-            Date.now() -
-            new Date(live_times[i].innerHTML)) / 1000
-
-        day = Math.floor(live_time / 86400)
-
-        live_time = live_time - day * 86400
-        hour = Math.floor(live_time / 3600)
-
-        if (day > 0) {
-            live_times[i].innerHTML = day + "d" + hour + "h"
-        } else if (hour > 0) {
-            live_times[i].innerHTML = hour + "h"
-        } else {
-            minute = Math.floor(live_time / 60)
-            live_times[i].innerHTML = minute + "m"
-        }
+        live_times[i].innerHTML = calculateAge(live_times[i].innerHTML)
     }
+}
+
+// not so accurate.
+function calculateAge(createdDate) {
+    let live_time = Math.abs(Date.now() - new Date(createdDate)) / 1000
+    year = Math.floor(live_time / 31536000)
+    live_time = live_time - year * 31536000
+
+    month = Math.floor(live_time / 2592000)
+    live_time = live_time - month * 2592000
+
+    day = Math.floor(live_time / 86400)
+    live_time = live_time - day * 86400
+
+    hour = Math.floor(live_time / 3600)
+    live_time = live_time - hour * 3600
+
+    minute = Math.floor(live_time / 60)
+
+    if (year > 0) {
+        return year + "y"
+    }
+
+    if (month > 0) {
+        return month + "M"
+    }
+
+    if (day > 0) {
+        return day + "d"
+    }
+
+    if (hour > 0) {
+        return hour + "h"
+    }
+
+    return minute + "m"
 }
 
 function editTask(id, project, title, content, state, priority) {
@@ -97,21 +114,18 @@ function editTask(id, project, title, content, state, priority) {
     popup.querySelector("#task-project").value = project
     popup.querySelector("#task-title").value = title
     popup.querySelector("#task-content").value = content
-    popup.querySelector("#task-content").value = content
     popup.querySelector("#task-id-delete").value = id
 
     if (state == 0) popup.querySelector("#state_todo").checked = true
     if (state == 1) popup.querySelector("#state_doing").checked = true
-    if (state == 2) popup.querySelector("#state_onhold").checked = true
-    if (state == 3) popup.querySelector("#state_done").checked = true
+    if (state == 2) popup.querySelector("#state_done").checked = true
 
     if (priority == 0) popup.querySelector("#priority_low").checked = true
     if (priority == 1) popup.querySelector("#priority_med").checked = true
     if (priority == 2) popup.querySelector("#priority_high").checked = true
-    if (priority == 3) popup.querySelector("#priority_hot").checked = true
 
-    popup.querySelector("#task-id-label").style.display = "inline"
-    popup.querySelector("#task-id-label").innerHTML = "T" + id
+    // popup.querySelector("#task-id-label").innerHTML = "Modifying task-" + id
+    popup.querySelector("#task-id-label").innerHTML = "MODIFYING TASK-" + id
     popup.querySelector(".btn-delete").disabled = false
 }
 
@@ -119,13 +133,14 @@ function createTask() {
     showPopup()
 
     popup.querySelector("#task-id").value = -1
+    popup.querySelector("#task-project").value = ""
     popup.querySelector("#task-title").value = ""
     popup.querySelector("#task-content").value = ""
 
     popup.querySelector("#state_todo").checked = true
     popup.querySelector("#priority_low").checked = true
-    popup.querySelector("#task-id-label").innerHTML = "asdf"
-    popup.querySelector("#task-id-label").style.display = "none"
+    // popup.querySelector("#task-id-label").innerHTML = "Creating new task"
+    popup.querySelector("#task-id-label").innerHTML = "CREATING NEW TASK"
 
     popup.querySelector(".btn-delete").disabled = true
 }

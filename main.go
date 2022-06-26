@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	// "fmt"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -49,7 +49,7 @@ func postTask(w http.ResponseWriter, r *http.Request) {
 
 // todo: you don't distingush well between server and client sides rendering. Fix that
 func getTasks(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("static/html/tasks.html", "static/html/tools.html")
+	t, _ := template.ParseFiles("static/html/tasks.html", "static/html/templates.html")
 
 	// todo: sort this
 	tasks := dh.ReadAllTasks()
@@ -66,14 +66,14 @@ func getTasks(w http.ResponseWriter, r *http.Request) {
 
 // todo: make these generic
 func k50Handler(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("static/html/images.html", "static/html/tools.html")
+	t, _ := template.ParseFiles("static/html/images.html", "static/html/templates.html")
 	paths := dh.GetFileList("res/k50")
 
 	t.Execute(w, paths)
 }
 
 func tnpdHandler(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("static/html/images.html", "static/html/tools.html")
+	t, _ := template.ParseFiles("static/html/images.html", "static/html/templates.html")
 	paths := dh.GetFileList("res/tnpd")
 
 	t.Execute(w, paths)
@@ -81,8 +81,8 @@ func tnpdHandler(w http.ResponseWriter, r *http.Request) {
 
 // todo:
 func mediaHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("mediaHandler")
-	http.Redirect(w, r, "/", http.StatusFound)
+	t, _ := template.ParseFiles("static/html/media.html", "static/html/templates.html")
+	t.Execute(w, 0)
 }
 
 func iconHandler(w http.ResponseWriter, r* http.Request) {
@@ -90,7 +90,7 @@ func iconHandler(w http.ResponseWriter, r* http.Request) {
 }
 
 func rootHandler(w http.ResponseWriter, r* http.Request) {
-	t, _ := template.ParseFiles("static/html/index.html", "static/html/tools.html")
+	t, _ := template.ParseFiles("static/html/index.html", "static/html/templates.html")
 	t.Execute(w, 0)
 }
 

@@ -9,7 +9,7 @@
     <div id="main-container">
         <div id="tasks">
             <div class="task-column" id="todo">
-                <p class="title-column">Todo</p>
+                <p class="title-column"></p>
                 {{ range . }}
                     {{if eq .State 0}}
                         {{template "task" .}}
@@ -18,7 +18,7 @@
             </div>
 
             <div class="task-column" id="doing">
-                <p class="title-column">Doing</p>
+                <p class="title-column"></p>
                 {{ range . }}
                     {{if eq .State 1}}
                         {{template "task" .}}
@@ -26,19 +26,10 @@
                 {{ end }}
             </div>
 
-            <div class="task-column" id="onhold">
-                <p class="title-column">Onhold</p>
+            <div class="task-column" id="done">
+                <p class="title-column"></p>
                 {{ range . }}
                     {{if eq .State 2}}
-                        {{template "task" .}}
-                    {{ end }}
-                {{ end }}
-            </div>
-
-            <div class="task-column" id="done">
-                <p class="title-column">Done</p>
-                {{ range . }}
-                    {{if eq .State 3}}
                         {{template "task" .}}
                     {{ end }}
                 {{ end }}
@@ -53,9 +44,12 @@
 
                 <div id="popup-header">
                     <label id="task-id-label"></label>
-                    <input placeholder="project" type="text" id="task-project" name="project">
-                    <input placeholder="title" type="text" id="task-title" name="title">
                     <button type="button" id="close-popup">❌</button>
+                </div>
+
+                <div id="popup-task-related">
+                        <input placeholder="project" type="text" id="task-project" name="project">
+                        <input placeholder="title" type="text" id="task-title" name="title">
                 </div>
 
                 <br>
@@ -64,38 +58,30 @@
                 <div class="radio-group">
                     <div class="radio-item">
                         <input type="radio" id="state_todo" name="state" value="0">
-                        <label for="state_todo">Todo</label>
+                        <label for="state_todo">todo</label>
                     </div>
                     <div class="radio-item">
                         <input type="radio" id="state_doing" name="state" value="1">
-                        <label for="state_doing">Doing</label>
+                        <label for="state_doing">doing</label>
                     </div>
                     <div class="radio-item">
-                            <input type="radio" id="state_onhold" name="state" value="2">
-                        <label for="state_onhold">Onhold</label>
-                    </div>
-                    <div class="radio-item">
-                            <input type="radio" id="state_done" name="state" value="3">
-                        <label for="state_done">Done</label>
+                            <input type="radio" id="state_done" name="state" value="2">
+                        <label for="state_done">done</label>
                     </div>
                 </div>
 
                 <div class="radio-group">
                     <div class="radio-item">
-                        <input type="radio" id="priority_low" name="priority" value="0" onclick="updatePriority()">
-                        <label for="priority_low">Low</label>
+                        <input type="radio" id="priority_low" name="priority" value="0">
+                        <label for="priority_low">low</label>
                     </div>
                     <div class="radio-item">
-                        <input type="radio" id="priority_med" name="priority" value="1" onclick="updatePriority()">
-                        <label for="priority_med">Med</label>
+                        <input type="radio" id="priority_med" name="priority" value="1">
+                        <label for="priority_med">med</label>
                     </div>
                     <div class="radio-item">
-                        <input type="radio" id="priority_high" name="priority" value="2" onclick="updatePriority()">
-                        <label for="priority_high">High</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" id="priority_hot" name="priority" value="3" onclick="updatePriority()">
-                        <label for="priority_hot">Hot</label>
+                        <input type="radio" id="priority_high" name="priority" value="2">
+                        <label for="priority_high">high</label>
                     </div>
                 </div>
             </form>
@@ -123,10 +109,8 @@
     </span>
     <p class="task-content">{{ .Content }}</p>
     <div>
-            <span class="task-id">T-{{ .Id }}</span>
-
             <span class="task-project">{{ .Project }}</span>
-            <span class="priority">{{ .Priority }}</span>
+            <span class="task-id">T-{{ .Id }}</span>
             <span class="tooltip">
                 <span class="live-time">
                     {{ .CreatedTime }}
@@ -135,6 +119,7 @@
                     Last update: {{ .LastUpdateTime }} <br> Created on: {{ .CreatedTime }}
                 </span>
             </span>
+            <span class="priority">{{ .Priority }}</span>
     </div>
 </div>
 
