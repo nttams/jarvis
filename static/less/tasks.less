@@ -51,6 +51,12 @@
     padding: 2px 5px;
     background-color: @background-dark;
     margin: 2px 0px;
+    cursor: pointer;
+}
+
+.priority-idea {
+    .tag();
+    background-color: @priority-idea;
 }
 
 .priority-low {
@@ -66,6 +72,11 @@
 .priority-high {
     .tag();
     background-color: @priority-high;
+}
+
+.priority-none {
+    .tag();
+    background-color: @priority-none;
 }
 
 .priority-blink {
@@ -171,11 +182,6 @@
 
     padding-top: 0;
 
-    #update-form {
-        display: flex;
-        flex-direction: column;
-    }
-
     .task-font {
         font-family: 'Ubuntu', sans-serif;
         font-size: 18px;
@@ -244,7 +250,7 @@
         }
     }
 
-    .form-item {
+    .popup-item {
         margin: 5px;
     }
 }
@@ -269,39 +275,4 @@
 
 .tooltip:hover .tooltiptext {
     visibility: visible;
-}
-
-.radio-group {
-    display: flex;
-    flex-direction: row;
-    margin: 5px;
-}
-.radio-item {
-    width: 100px;
-}
-
-input[type=radio] {
-    visibility: hidden;
-    position: absolute;
-}
-input[type=radio] + label:before {
-    height:16px;
-    width:16px;
-    margin-right: 5px;
-    content: " ";
-    display:inline-block;
-    vertical-align: baseline;
-    background-color: white;
-}
-
-input[type=radio]:hover + label:before{
-    background: @radio-btn-hover;
-}
-
-input[type=radio]:checked + label:before {
-    background: @radio-btn;
-}
-
-input[type=radio] + label:before{
-    border-radius: 50%;
 }

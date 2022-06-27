@@ -8,7 +8,6 @@ import (
 	"sort"
 )
 
-// todo: hide these fields
 type Task struct {
 	Id int
 	Project string
@@ -57,6 +56,11 @@ func (a ByLastUpdate) Less(i, j int) bool {
 	return false;
 }
 
+type JsonRequest struct {
+	Command string
+	Task Task
+}
+
 type TaskForTmpl struct {
 	Id int
 	Project string
@@ -88,12 +92,13 @@ const (
 
 type Priority int
 const (
-	Low Priority = iota
+	Idea Priority = iota
+	Low
 	Med
 	High
 )
 
-func GetTasksForTmpl() (result TasksForTmpl) {
+func GetAllTasksForTmpl() (result TasksForTmpl) {
 	tasks := readAllTasks()
 
 	todo, doing, done := getTaskInGroups(tasks)
@@ -219,6 +224,8 @@ func (s State) ToString() string {
 
 func (p Priority) ToString() string {
 	switch p {
+	case Idea:
+		return "Idea"
 	case Low:
 		return "Low"
 	case Med:
@@ -260,31 +267,30 @@ func getAFreeId() int {
 	return max + 1;
 }
 
-func CreateNewTask(project string, title string, content string, state int, priority int) {
+func CreateTask(project string, title string, content string, priority Priority) {
 	id := getAFreeId()
 
 	now := time.Now()
-	task := Task {id, project, title, content, State(state), Priority(priority), now, now}
+	task := Task {id, project, title, content, Todo, Priority(priority), now, now}
 	saveTask(&task)
 }
 
-func UpdateTask(id int, project string, title string, content string, state int, priority int) {
+func UpdateTask(id int, project string, title string, content string, priority Priority) {
 	task := readTask(id)
 
-	// changing attribute in done tasks does not update lastUpdateTime
-	if !(task.State == Done && state == int(Done)) {
+	// changing attribute in done task does not update lastUpdateTime
+	if task.State != Done {
 		task.LastUpdateTime = time.Now();
 	}
 
 	task.Project = project;
 	task.Title = title;
 	task.Content = content;
-	task.State = State(state);
-	task.Priority = Priority(priority);
+	task.Priority = priority;
 	saveTask(&task)
 }
 
-func UpdateTaskState(id int, state int) {
+func UpdateTaskState(id int, state State) {
 	task := readTask(id)
 
 	task.State = State(state);

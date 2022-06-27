@@ -33,59 +33,29 @@
         <div id="overlay"></div>
 
         <div id="popup">
-            <form id="update-form" action="/tasks/" method="post">
-                <input type="hidden" id="task-id" name="id">
+            <div id="popup-header">
+                <label id="task-id-label"></label>
+                <button type="button" id="close-popup">❌</button>
+            </div>
 
-                <div id="popup-header">
-                    <label id="task-id-label"></label>
-                    <button type="button" id="close-popup">❌</button>
-                </div>
+            <input type="hidden" id="task-id">
+            <div id="popup-task-related">
+                    <input placeholder="project" class="popup-item" id="task-project">
+                    <input placeholder="title" class="popup-item" id="task-title">
+            </div>
 
-                <div id="popup-task-related">
-                        <input placeholder="project" type="text" id="task-project" name="project">
-                        <input placeholder="title" type="text" id="task-title" name="title">
-                </div>
+            <br>
+            <textarea placeholder="content" class="popup-item" id="task-content"></textarea>
+            <input type="hidden" id="task-priority">
+            <div class="popup-item">
+                <span id="popup-priority-idea" class="priority-none" onclick="setPriorityIdea()">idea</span>
+                <span id="popup-priority-low" class="priority-none" onclick="setPriorityLow()">low</span>
+                <span id="popup-priority-med" class="priority-none" onclick="setPriorityMed()">med</span>
+                <span id="popup-priority-high" class="priority-none" onclick="setPriorityHigh()">high</span>
+            </div>
 
-                <br>
-                <textarea placeholder="content" class="form-item" id="task-content" name="content"></textarea>
-
-                <div class="radio-group">
-                    <div class="radio-item">
-                        <input type="radio" id="state_todo" name="state" value="0">
-                        <label for="state_todo">todo</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" id="state_doing" name="state" value="1">
-                        <label for="state_doing">doing</label>
-                    </div>
-                    <div class="radio-item">
-                            <input type="radio" id="state_done" name="state" value="2">
-                        <label for="state_done">done</label>
-                    </div>
-                </div>
-
-                <div class="radio-group">
-                    <div class="radio-item">
-                        <input type="radio" id="priority_low" name="priority" value="0">
-                        <label for="priority_low">low</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" id="priority_med" name="priority" value="1">
-                        <label for="priority_med">med</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" id="priority_high" name="priority" value="2">
-                        <label for="priority_high">high</label>
-                    </div>
-                </div>
-            </form>
-
-            <form id="delete-form" action="/delete-task/" method="post" onsubmit="return confirm('really?')">
-                <input type="hidden" id="task-id-delete" name="id-delete">
-            </form>
-
-            <input class="btn" type="submit" value="Submit" form="update-form">
-            <input class="btn-delete" type="submit" value="Delete" form="delete-form" >
+            <button class="btn popup-item" onclick="createOrUpdateTask()">Summit</button>
+            <button class="btn-delete popup-item" id="btn-delete" onclick="deleteTask()">Delete</button>
         </div>
     </div>
 
@@ -99,7 +69,7 @@
 
 <!-- id="T-" for drag and drop -->
 <div class="task" id="T-{{ .Id }}">
-    <span class="task-title" onclick="editTask( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .State }}, {{ .Priority }})">
+    <span class="task-title" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
         {{.Title}}
     </span>
     <p class="task-content">{{ .Content }}</p>
