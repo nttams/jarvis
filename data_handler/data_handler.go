@@ -270,11 +270,24 @@ func CreateNewTask(project string, title string, content string, state int, prio
 
 func UpdateTask(id int, project string, title string, content string, state int, priority int) {
 	task := readTask(id)
+
+	// changing attribute in done tasks does not update lastUpdateTime
+	if !(task.State == Done && state == int(Done)) {
+		task.LastUpdateTime = time.Now();
+	}
+
 	task.Project = project;
 	task.Title = title;
 	task.Content = content;
 	task.State = State(state);
 	task.Priority = Priority(priority);
+	saveTask(&task)
+}
+
+func UpdateTaskState(id int, state int) {
+	task := readTask(id)
+
+	task.State = State(state);
 	task.LastUpdateTime = time.Now();
 	saveTask(&task)
 }

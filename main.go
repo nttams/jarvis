@@ -2,6 +2,7 @@ package main
 
 import (
 	"html/template"
+	"encoding/json"
 	"net/http"
 	"strconv"
 	dh "data_handler"
@@ -30,17 +31,25 @@ func deleteHandler(w http.ResponseWriter, r *http.Request) {
 func postTask(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() //todo: error handling
 
-	id, _ := strconv.Atoi(r.PostForm["id"][0])
-	project := r.PostForm["project"][0]
-	title := r.PostForm["title"][0]
-	content := r.PostForm["content"][0]
-	state, _ := strconv.Atoi(r.PostForm["state"][0])
-	priority, _ := strconv.Atoi(r.PostForm["priority"][0])
+	// todo: switch all to applicatin/json
+	if r.Header["Content-Type"][0] == "application/x-www-form-urlencoded" {
+		id, _ := strconv.Atoi(r.PostForm["id"][0])
+		project := r.PostForm["project"][0]
+		title := r.PostForm["title"][0]
+		content := r.PostForm["content"][0]
+		state, _ := strconv.Atoi(r.PostForm["state"][0])
+		priority, _ := strconv.Atoi(r.PostForm["priority"][0])
 
-	if id == -1 {
-		dh.CreateNewTask(project, title, content, state, priority)
-	} else {
-		dh.UpdateTask(id, project, title, content, state, priority)
+		if id == -1 {
+			dh.CreateNewTask(project, title, content, state, priority)
+		} else {
+			dh.UpdateTask(id, project, title, content, state, priority)
+		}
+	} else if r.Header["Content-Type"][0] == "application/json" {
+		var task dh.Task
+		_ = json.NewDecoder(r.Body).Decode(&task)
+
+		dh.UpdateTaskState(task.Id, int(task.State))
 	}
 
 	http.Redirect(w, r, "/tasks/", http.StatusFound)

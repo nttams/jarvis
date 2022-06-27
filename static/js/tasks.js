@@ -92,6 +92,51 @@ function hidePopup() {
     popup.style.display = "none"
 }
 
+function allowDrop(e) {
+    e.preventDefault()
+}
+
+function drag(e) {
+    e.dataTransfer.setData("id", e.target.innerHTML)
+}
+
+function drop(e) {
+    var id = e.dataTransfer.getData("id")
+
+    let state = -1
+
+    if (e.target.classList.contains("dnd-state-0")) {
+        state = 0
+    }
+    if (e.target.classList.contains("dnd-state-1")) {
+        state = 1
+    }
+    if (e.target.classList.contains("dnd-state-2")) {
+        state = 2
+    }
+
+    if (state != -1) {
+        task_id = id.split("-")[1]
+        let data = {id: parseInt(task_id), state: state}
+
+        if (document.querySelector("#" + id)
+            .querySelector(".priority")
+            .classList.contains("state-" + state)) {
+            return
+        }
+
+        // todo: improve url, don't just copy
+        fetch("http://localhost:8080/tasks/", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data)
+        }).then(res => {
+            window.location.href = "http://localhost:8080/tasks"
+        })
+    }
+
+}
+
 function init() {
     initPriority()
     initCreateButtion()
