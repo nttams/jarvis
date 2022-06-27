@@ -20,23 +20,34 @@
     background-color: @btn-hover;
 }
 
-.btn-delete {
-    .btn();
-    background-color: @btn-del;
-    float: right;
-}
-
-.btn-delete:hover {
-    background-color: @btn-del-hover;
-}
-
-.btn-delete:disabled {
-    visibility: hidden;
-}
-
-#btn-create {
+#tasks-header {
     margin-left: auto;
-    margin-right: 10px;;
+    margin-right: 10px;
+    margin-top: 0;
+    margin-bottom: 0;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: @bg-light;
+    border-radius: 10px;
+
+    #btn-create {
+        margin: 5px;
+        margin-right: 10px;
+    }
+
+    #recycle-bin {
+        padding: 7px;
+        margin: 10px;
+        font-size: 20px;
+        cursor: pointer;
+        border-radius: 10px;
+    }
+
+    .recycle-bin-active {
+       background-color: @bg-dark;
+    }
 }
 
 .tag {
@@ -49,7 +60,7 @@
     border: none;
     letter-spacing: 1.5px;
     padding: 2px 5px;
-    background-color: @background-dark;
+    background-color: @bg-dark;
     margin: 2px 0px;
     cursor: pointer;
 }
@@ -94,7 +105,7 @@
     flex-direction: row;
 
     .task-column {
-        background-color: @background-dark;
+        background-color: @bg-dark;
         margin: 10px;
         padding: 2px;
         border-radius: 10px;
@@ -112,7 +123,7 @@
             border-radius: 10px;
             margin: 20px 10px;
             padding: 10px;
-            background-color: @background-light;
+            background-color: @bg-light;
             min-height: 120px;
 
             display: flex;
@@ -137,13 +148,11 @@
 
                 .task-anchor {
                     cursor: pointer;
-                    // font-size: 14px;
                 }
             }
 
             .task-content {
                 color: white;
-                margin: 5px 0px;
                 flex-grow: 1;
             }
 
@@ -173,7 +182,7 @@
     width: 100%;
     height: 100%;
     opacity: 0.7;
-    z-index: 100;
+    z-index: 10;
 }
 
 #popup {
@@ -181,25 +190,25 @@
     position: fixed;
     top: 50%;
     left: 50%;
-    width: 50%;
+    width: 40%;
     height: fit-content;
     padding: 20px;
     transform: translate(-50%, -50%);
-    z-index:200;
+    z-index: 20;
     border: none;
     border-radius: 10px;
-    background: @background-dark;
+    background-color: @bg-dark;
 
     padding-top: 0;
 
     .task-font {
         font-family: 'Ubuntu', sans-serif;
         font-size: 18px;
-        background-color: @background-light;
+        background-color: @bg-light;
         color: white;
         padding: 5px;
         border: none;
-        border-radius: 10px;
+        border-radius: 5px;
     }
 
     .popup-task-related {
@@ -226,7 +235,7 @@
     #popup-header {
         margin: 0;
         padding: 0;
-        margin: 30px 0;
+        margin: 20px 0;
 
         #task-id-label {
             .popup-task-related();
@@ -257,11 +266,16 @@
         #task-title {
             .popup-task-related();
             flex-grow: 1;
+            margin-right: 0;
         }
     }
 
     .popup-item {
-        margin: 5px;
+        margin: 10px 5px;
+
+        #popup-create-task {
+            float: right;
+        }
     }
 }
 

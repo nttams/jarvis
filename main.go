@@ -21,7 +21,7 @@ func tasksHandler(w http.ResponseWriter, r *http.Request) {
 				dh.CreateTask(req.Task.Project, req.Task.Title, req.Task.Content, req.Task.Priority)
 			case "update-task":
 				dh.UpdateTask(req.Task.Id, req.Task.Project, req.Task.Title, req.Task.Content, req.Task.Priority)
-			case "update-taks-state":
+			case "update-task-state":
 				dh.UpdateTaskState(req.Task.Id, req.Task.State)
 			case "delete-task":
 				dh.DeleteTask(req.Task.Id)

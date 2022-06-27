@@ -9,7 +9,7 @@ html {
     font-family: 'Ubuntu', sans-serif;
     font-size: 16px;
     color: white;
-    background-color: @background-light;
+    background-color: @bg-light;
 }
 
 body {
@@ -24,9 +24,25 @@ header {
     padding-top: 10px;
     padding-bottom: 10px;
     color: white;
-    background-color: @background-dark;
+    background-color: @bg-dark;
     display: flex;
     flex-direction: row;
+    height: 40px;
+
+    // make it always on top
+    position: sticky;
+    top: 0;
+    z-index: 5;
+
+    #menu-container {
+        margin-left: 10px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        background-color: @bg-light;
+        border-radius: 10px;
+    }
+
     ul {
         list-style-type: none;
         margin: 0;
@@ -72,7 +88,7 @@ footer {
     // for inside
     display: flex;
     justify-content: center;
-    background-color: @background-dark;
+    background-color: @bg-dark;
 
     #contacts {
         width: 60%;

@@ -36,14 +36,41 @@ function hidePopup() {
 }
 
 function initCreateButtion() {
-    const btn = document.createElement("button")
+    const tasks_div = document.createElement("div")
+    tasks_div.setAttribute("id", "tasks-header")
 
+    // create button
+    const btn = document.createElement("button")
     btn.onclick = openCreatePopup
     btn.setAttribute("id", "btn-create")
     btn.classList.add("btn")
     btn.innerHTML = "create"
 
-    document.querySelector("#header").appendChild(btn)
+    // create recycle bin
+    const recycle_bin = document.createElement("div")
+    recycle_bin.setAttribute("id", "recycle-bin")
+    recycle_bin.innerHTML = "🗑"
+
+    recycle_bin.addEventListener("drop", (event) => {
+        dropOnRecycleBin(event)
+    })
+
+    recycle_bin.addEventListener("dragover", (event) => {
+        allowDrop(event)
+    })
+
+    recycle_bin.addEventListener("dragenter", () => {
+        recycle_bin.classList.add("recycle-bin-active")
+    })
+
+    recycle_bin.addEventListener("dragleave", () => {
+        recycle_bin.classList.remove("recycle-bin-active")
+    })
+
+    tasks_div.appendChild(recycle_bin)
+    tasks_div.appendChild(btn)
+
+    document.querySelector("#header").appendChild(tasks_div)
 }
 
 function initPriority() {
@@ -76,8 +103,7 @@ function openEditPopup(id, project, title, content, priority) {
     POPUP.querySelector("#task-title").value =  title
     POPUP.querySelector("#task-content").value =  content
 
-    POPUP.querySelector("#task-id-label").innerHTML = "modifying task-" + id
-    POPUP.querySelector(".btn-delete").disabled = false
+    POPUP.querySelector("#task-id-label").innerHTML = "editing task-" + id
 }
 
 function openCreatePopup() {
@@ -91,49 +117,68 @@ function openCreatePopup() {
 
     // priority_low should be used as default, idea is only for very opaque thought
     POPUP.querySelector("#task-id-label").innerHTML = "creating new task"
-
-    POPUP.querySelector("#btn-delete").disabled = true
 }
 
 function createOrUpdateTask() {
-    id = document.querySelector("#task-id").value
+    id = parseInt(document.querySelector("#task-id").value)
     project = document.querySelector("#task-project").value
     title = document.querySelector("#task-title").value
     content = document.querySelector("#task-content").value
-    priority = document.querySelector("#task-priority").value
+    priority = parseInt(document.querySelector("#task-priority").value)
 
-    command = "create-task"
-    if (id != "-1") {
-        command = "update-task"
+    if (id != -1) {
+        sendUpdateTask(id, project, title, content, priority)
+    } else {
+        sendCreateTask(project, title, content, priority)
     }
+}
 
+function sendCreateTask(project, title, content, priority) {
     let data = {
-        command: command,
+        command: "create-task",
         task: {
-            id: parseInt(id),
             project: project,
             title: title,
             content: content,
-            priority: parseInt(priority)
+            priority: priority
         }
     }
-
     query(data)
 }
 
+function sendUpdateTask(id, project, title, content, priority) {
+    let data = {
+        command: "update-task",
+        task: {
+            id: id,
+            project: project,
+            title: title,
+            content: content,
+            priority: priority
+        }
+    }
+    query(data)
+}
 
-function deleteTask() {
+function sendUpdateStateTask(id, state) {
+    let data = {
+        command: "update-task-state",
+        task: {
+            id: id,
+            state: state
+        }
+    }
+    query(data)
+}
+
+function sendDeleteTask(id) {
     if (!confirm("sure?")) return;
-
-    id = document.querySelector("#task-id").value
-
     let data = {
         command: "delete-task",
         task: {
-            id: parseInt(id),
+            id: id,
         }
     }
-
     query(data)
 }
 
@@ -197,16 +242,18 @@ function resetPriorty() {
     document.querySelector("#popup-priority-high").className = "priority-none"
 }
 
-function allowDrop(e) {
-    e.preventDefault()
-}
+// drap and drop
 
 function drag(e, id) {
     e.dataTransfer.setData("id", id)
 }
 
-function drop(e) {
-    var id = e.dataTransfer.getData("id")
+function allowDrop(e) {
+    e.preventDefault()
+}
+
+function dropOnStateColumn(e) {
+    var id = parseInt(e.dataTransfer.getData("id"))
 
     let state = -1
 
@@ -220,24 +267,22 @@ function drop(e) {
         state = STATE_DONE
     }
 
-    if (state != -1) {
-        // moving to same state, do nothing
-        if (document.querySelector("#T-" + id)
-            .querySelector(".priority")
-            .classList.contains("state-" + state)) {
-            return
-        }
+    if (state == -1) return
 
-        let data = {
-            command: "update-taks-state",
-            task: {
-                id: parseInt(id),
-                state: state
-            }
-        }
-
-        query(data)
+    // moving to same state, do nothing
+    if (document.querySelector("#T-" + id)
+        .querySelector(".priority")
+        .classList.contains("state-" + state)) {
+        return
     }
+
+    sendUpdateStateTask(id, state)
+}
+
+function dropOnRecycleBin(e) {
+    document.querySelector("#recycle-bin").classList.remove("recycle-bin-active")
+    var id = parseInt(e.dataTransfer.getData("id"))
+    sendDeleteTask(id)
 }
 
 function init() {

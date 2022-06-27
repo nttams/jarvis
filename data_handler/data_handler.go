@@ -225,13 +225,13 @@ func (s State) ToString() string {
 func (p Priority) ToString() string {
 	switch p {
 	case Idea:
-		return "Idea"
+		return "idea"
 	case Low:
-		return "Low"
+		return "low"
 	case Med:
-		return "Med"
+		return "med"
 	case High:
-		return "High"
+		return "high"
 	}
 	return "unknown"
 }
