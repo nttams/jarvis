@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Tasks</title>
+    <title>tasks</title>
     {{template "importer" .}}
     <link rel="stylesheet/less" type="text/css" href="/static/less/tasks.less" />
 </head>
@@ -54,8 +54,8 @@
                 <span id="popup-priority-high" class="priority-none" onclick="setPriorityHigh()">high</span>
             </div>
 
-            <button class="btn popup-item" onclick="createOrUpdateTask()">Summit</button>
-            <button class="btn-delete popup-item" id="btn-delete" onclick="deleteTask()">Delete</button>
+            <button class="btn popup-item" onclick="createOrUpdateTask()">submit</button>
+            <button class="btn-delete popup-item" id="btn-delete" onclick="deleteTask()">delete</button>
         </div>
     </div>
 
@@ -69,22 +69,33 @@
 
 <!-- id="T-" for drag and drop -->
 <div class="task" id="T-{{ .Id }}">
-    <span class="task-title" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
-        {{.Title}}
-    </span>
+    <div class="task-header">
+        <span class="task-title" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
+            {{.Title}}
+        </span>
+        <span class="task-anchor" draggable="true" ondragstart="drag(event, {{.Id}})">
+            ⋮
+        </span>
+    </div>
     <p class="task-content">{{ .Content }}</p>
     <div>
-            <span class="task-project">{{ .Project }}</span>
-            <span class="task-id" draggable="true" ondragstart="drag(event)">T-{{ .Id }}</span>
+            <span class="task-project" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
+                {{ .Project }}
+            </span>
+            <span class="task-id" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
+                T-{{ .Id }}
+            </span>
             <span class="tooltip">
-                <span class="live-time">
+                <span class="live-time" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
                     {{ .LivedTime }}
                 </span>
                 <span class="tooltiptext">
-                    Last update: {{ .LastUpdateTime }} <br> Created on: {{ .CreatedTime }}
+                    Last update: {{ .LastUpdateTime }} <br> created on: {{ .CreatedTime }}
                 </span>
             </span>
-            <span class="priority state-{{.State}}">{{ .Priority }}</span>
+            <span class="priority state-{{.State}}" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
+                {{ .Priority }}
+            </span>
     </div>
 </div>
 

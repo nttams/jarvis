@@ -1,6 +1,17 @@
-const overlay = document.querySelector("#overlay");
-const popup = document.querySelector("#popup");
-const close_popup = document.querySelector("#close-popup");
+const ESCAPE_KEY = 27
+
+const PRIORITY_IDEA = 0
+const PRIORITY_LOW = 1
+const PRIORITY_MED = 2
+const PRIORITY_HIGH = 3
+const PRIORITY_DEFAULT = PRIORITY_LOW
+
+const STATE_TODO = 0
+const STATE_DOING = 1
+const STATE_DONE = 2
+
+const OVERLAY = document.querySelector("#overlay");
+const POPUP = document.querySelector("#popup");
 
 function initHotKeys() {
     window.onload=function() {
@@ -9,19 +20,19 @@ function initHotKeys() {
 }
 
 function key_event(e) {
-    if (e.keyCode == 27) {
+    if (e.keyCode == ESCAPE_KEY) {
         hidePopup()
     }
 }
 
 function showPopup() {
-    overlay.style.display = "block"
-    popup.style.display = "block"
+    OVERLAY.style.display = "block"
+    POPUP.style.display = "block"
 }
 
 function hidePopup() {
-    overlay.style.display = "none"
-    popup.style.display = "none"
+    OVERLAY.style.display = "none"
+    POPUP.style.display = "none"
 }
 
 function initCreateButtion() {
@@ -30,7 +41,7 @@ function initCreateButtion() {
     btn.onclick = openCreatePopup
     btn.setAttribute("id", "btn-create")
     btn.classList.add("btn")
-    btn.innerHTML = "Create"
+    btn.innerHTML = "create"
 
     document.querySelector("#header").appendChild(btn)
 }
@@ -43,12 +54,13 @@ function initPriority() {
 
     for (let i = 0; i < priorities.length; ++i) {
         let priority_index = priorities[i].innerHTML
+        priority_index = priority_index.trim()
 
         priorities[i].innerHTML = names[priority_index]
         priorities[i].classList.add(classes[priority_index])
 
         // high priority tasks in done column don't blink
-        if ((priority_index == 3) && !priorities[i].classList.contains("state-2")) {
+        if ((priority_index == PRIORITY_HIGH) && !priorities[i].classList.contains("state-2")) {
             priorities[i].classList.add("priority-blink")
         }
 
@@ -59,28 +71,28 @@ function openEditPopup(id, project, title, content, priority) {
     showPopup()
     selectPriorty(priority)
 
-    popup.querySelector("#task-id").value = id
-    popup.querySelector("#task-project").value = project
-    popup.querySelector("#task-title").value =  title
-    popup.querySelector("#task-content").value =  content
+    POPUP.querySelector("#task-id").value = id
+    POPUP.querySelector("#task-project").value = project
+    POPUP.querySelector("#task-title").value =  title
+    POPUP.querySelector("#task-content").value =  content
 
-    popup.querySelector("#task-id-label").innerHTML = "MODIFYING TASK-" + id
-    popup.querySelector(".btn-delete").disabled = false
+    POPUP.querySelector("#task-id-label").innerHTML = "modifying task-" + id
+    POPUP.querySelector(".btn-delete").disabled = false
 }
 
 function openCreatePopup() {
     showPopup()
-    selectPriorty(1)
+    selectPriorty(PRIORITY_DEFAULT)
 
-    popup.querySelector("#task-id").value = -1
-    popup.querySelector("#task-project").value = ""
-    popup.querySelector("#task-title").value = ""
-    popup.querySelector("#task-content").value = ""
+    POPUP.querySelector("#task-id").value = -1
+    POPUP.querySelector("#task-project").value = ""
+    POPUP.querySelector("#task-title").value = ""
+    POPUP.querySelector("#task-content").value = ""
 
     // priority_low should be used as default, idea is only for very opaque thought
-    popup.querySelector("#task-id-label").innerHTML = "CREATING NEW TASK"
+    POPUP.querySelector("#task-id-label").innerHTML = "creating new task"
 
-    popup.querySelector("#btn-delete").disabled = true
+    POPUP.querySelector("#btn-delete").disabled = true
 }
 
 function createOrUpdateTask() {
@@ -132,26 +144,27 @@ function query(data) {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(data)
     }).then(res => {
+        // todo: go to redirect from response
         window.location.href = "http://localhost:8080/tasks"
     })
 }
 
 function setPriorityIdea() {
-    selectPriorty(0)
+    selectPriorty(PRIORITY_IDEA)
 }
 
 function setPriorityLow() {
-    selectPriorty(1)
+    selectPriorty(PRIORITY_LOW)
 }
 
 
 function setPriorityMed() {
-    selectPriorty(2)
+    selectPriorty(PRIORITY_MED)
 }
 
 
 function setPriorityHigh() {
-    selectPriorty(3)
+    selectPriorty(PRIORITY_HIGH)
 }
 
 // todo: ugly, improve this
@@ -160,19 +173,19 @@ function selectPriorty(value) {
 
     document.querySelector("#task-priority").value = value
 
-    if (value == 0 ){
+    if (value == PRIORITY_IDEA){
         document.querySelector("#popup-priority-idea").className = "priority-blink priority-idea"
     }
 
-    if (value == 1 ){
+    if (value == PRIORITY_LOW){
         document.querySelector("#popup-priority-low").className = "priority-blink priority-low"
     }
 
-    if (value == 2 ){
+    if (value == PRIORITY_MED){
         document.querySelector("#popup-priority-med").className = "priority-blink priority-med"
     }
 
-    if (value == 3 ){
+    if (value == PRIORITY_HIGH){
         document.querySelector("#popup-priority-high").className = "priority-blink priority-high"
     }
 }
@@ -188,8 +201,8 @@ function allowDrop(e) {
     e.preventDefault()
 }
 
-function drag(e) {
-    e.dataTransfer.setData("id", e.target.innerHTML)
+function drag(e, id) {
+    e.dataTransfer.setData("id", id)
 }
 
 function drop(e) {
@@ -198,28 +211,28 @@ function drop(e) {
     let state = -1
 
     if (e.target.classList.contains("dnd-state-0")) {
-        state = 0
+        state = STATE_TODO
     }
     if (e.target.classList.contains("dnd-state-1")) {
-        state = 1
+        state = STATE_DOING
     }
     if (e.target.classList.contains("dnd-state-2")) {
-        state = 2
+        state = STATE_DONE
     }
 
     if (state != -1) {
         // moving to same state, do nothing
-        if (document.querySelector("#" + id)
+        if (document.querySelector("#T-" + id)
             .querySelector(".priority")
             .classList.contains("state-" + state)) {
             return
         }
 
-        task_id = id.split("-")[1]
         let data = {
             command: "update-taks-state",
             task: {
-                id: parseInt(task_id), state: state
+                id: parseInt(id),
+                state: state
             }
         }
 
@@ -232,7 +245,7 @@ function init() {
     initCreateButtion()
     initHotKeys()
 
-    close_popup.onclick = hidePopup;
+    POPUP.querySelector("#close-popup").onclick = hidePopup;
 }
 
 init()
