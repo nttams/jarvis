@@ -9,7 +9,7 @@
     {{template "header" .}}
 
     {{range .}}
-    <img src="{{.}}" alt="notfound">
+        <img src="{{.}}" alt="notfound" loading="lazy" style="width: 30%">
     {{end}}
 
     {{template "footer" .}}

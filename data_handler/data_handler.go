@@ -21,8 +21,8 @@ type Task struct {
 
 // todo and doing states use this
 type ByPriority []Task
-func (a ByPriority) Len() int           { return len(a) }
-func (a ByPriority) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByPriority) Len() int { return len(a) }
+func (a ByPriority) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 
 // priority (dec) --> created time (inc) --> id (inc)
 func (a ByPriority) Less(i, j int) bool {
@@ -38,8 +38,8 @@ func (a ByPriority) Less(i, j int) bool {
 
 // done state uses this
 type ByLastUpdate []Task
-func (a ByLastUpdate) Len() int           { return len(a) }
-func (a ByLastUpdate) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByLastUpdate) Len() int { return len(a) }
+func (a ByLastUpdate) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 
 // last update (dec) --> priority (dec) --> created time (inc) --> id (inc)
 func (a ByLastUpdate) Less(i, j int) bool {
@@ -73,6 +73,16 @@ type TaskForTmpl struct {
 	LivedTime string
 }
 
+type ProjectInfo struct {
+	Project string
+	Count int
+}
+
+type ByCount []ProjectInfo
+func (a ByCount) Len() int { return len(a) }
+func (a ByCount) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a ByCount) Less(i, j int) bool { 	return a[i].Count < a[j].Count }
+
 type TasksForTmpl struct {
 	Todo []TaskForTmpl
 	Doing []TaskForTmpl
@@ -81,6 +91,7 @@ type TasksForTmpl struct {
 	NumberDoing int
 	NumberDone int
 	NumberDoneFiltered int
+	ProjectInfos []ProjectInfo
 }
 
 type State int
@@ -98,10 +109,32 @@ const (
 	High
 )
 
-func GetAllTasksForTmpl() (result TasksForTmpl) {
+func GetAllTasksForTmpl(project string) (result TasksForTmpl) {
 	tasks := readAllTasks()
+	if project != "all" {
+		filteredTasks := filterProjectFromTasks(tasks, project)
+		result = convertTasksToTasksForTmpl(filteredTasks)
+	} else {
+		result = convertTasksToTasksForTmpl(tasks)
+	}
 
-	todo, doing, done := getTaskInGroups(tasks)
+	result.ProjectInfos = collectProjectInfos(tasks)
+
+	return
+}
+
+func filterProjectFromTasks(tasks []Task, project string) []Task {
+	var result []Task
+	for _, task := range tasks {
+		if task.Project == project {
+			result = append(result, task)
+		}
+	}
+	return result
+}
+
+func convertTasksToTasksForTmpl(tasks []Task) (result TasksForTmpl) {
+	todo, doing, done := divideTasksIntoGroups(tasks)
 
 	sort.Sort(sort.Reverse(ByPriority(todo)))
 	sort.Sort(sort.Reverse(ByPriority(doing)))
@@ -127,7 +160,60 @@ func GetAllTasksForTmpl() (result TasksForTmpl) {
 	return
 }
 
-func getTaskInGroups(tasks []Task) (todo []Task, doing []Task, done[]Task){
+func getDistinctProject(tasks []Task) (result []string) {
+	for _, task := range tasks {
+		if !isIn(result, task.Project) {
+			result = append(result, task.Project)
+		}
+	}
+	return
+}
+
+func countProject(tasks []Task, project string) int {
+	result := 0;
+	for _, task := range tasks {
+		if (task.Project == project) {
+			result++
+		}
+	}
+	return result
+}
+
+// todo: ugly
+func collectProjectInfos(tasks []Task) (result []ProjectInfo) {
+	distinctProjects := getDistinctProject(tasks)
+
+	result = append(result, ProjectInfo {"all", 0})
+
+	for _, project := range distinctProjects {
+		result = append(result, ProjectInfo {project, 0})
+	}
+
+	for i, _ := range result {
+		result[i].Count = countProject(tasks, result[i].Project)
+	}
+
+	// todo: test if this copies or points. i'm lazy now
+	// for _, projectInfo := range result {
+
+	result[0].Count = len(tasks)
+
+	sort.Sort(sort.Reverse(ByCount(result)))
+
+	return
+}
+
+
+func isIn(slice []string, value string) bool {
+	for _, item := range slice {
+		if item == value {
+			return true;
+		}
+	}
+	return false;
+}
+
+func divideTasksIntoGroups(tasks []Task) (todo []Task, doing []Task, done[]Task){
 	for _, task := range tasks {
 		switch task.State {
 			case Todo:
@@ -160,37 +246,37 @@ func ConvertTaskToTaskForTmpl(task *Task) (result TaskForTmpl) {
 func generatePrettyAgeForTag(createdDate time.Time) string {
 	var live_time int64 = time.Now().Sub(createdDate).Milliseconds() / 1000
 
-    year := int64(live_time / 31536000)
-    live_time = live_time - year * 31536000
+	year := int64(live_time / 31536000)
+	live_time = live_time - year * 31536000
 
-    month := int64(live_time / 2592000)
-    live_time = live_time - month * 2592000
+	month := int64(live_time / 2592000)
+	live_time = live_time - month * 2592000
 
-    day := int64(live_time / 86400)
-    live_time = live_time - day * 86400
+	day := int64(live_time / 86400)
+	live_time = live_time - day * 86400
 
-    hour := int64(live_time / 3600)
-    live_time = live_time - hour * 3600
+	hour := int64(live_time / 3600)
+	live_time = live_time - hour * 3600
 
-    minute := int64(live_time / 60)
+	minute := int64(live_time / 60)
 
-    if (year > 0) {
-        return strconv.FormatInt(year, 10) + "y"
-    }
+	if (year > 0) {
+		return strconv.FormatInt(year, 10) + "y"
+	}
 
-    if (month > 0) {
-        return strconv.FormatInt(month, 10) + "M"
-    }
+	if (month > 0) {
+		return strconv.FormatInt(month, 10) + "M"
+	}
 
-    if (day > 0) {
-        return strconv.FormatInt(day, 10) + "d"
-    }
+	if (day > 0) {
+		return strconv.FormatInt(day, 10) + "d"
+	}
 
-    if (hour > 0) {
-        return strconv.FormatInt(hour, 10) + "h"
-    }
+	if (hour > 0) {
+		return strconv.FormatInt(hour, 10) + "h"
+	}
 
-    return strconv.FormatInt(minute, 10) + "m"
+	return strconv.FormatInt(minute, 10) + "m"
 }
 
 func convertTimeToString(t *time.Time) string {

@@ -6,6 +6,22 @@
 </head>
 <body>
     {{template "header" .}}
+    <div id="tasks-header">
+        <select id="project-filter" onchange="changeProject(this.value)">
+            {{ range .ProjectInfos }}
+                <option value="{{ .Project }}"> {{ .Project }} ({{ .Count }}) </option>
+            {{ end }}
+        </select>
+        <div id="recycle-bin" ondrop="dropOnRecycleBin(event)"
+                              ondragover="allowDrop(event)"
+                              ondragenter="this.classList.add('recycle-bin-active')"
+                              ondragleave="this.classList.remove('recycle-bin-active')">
+            🗑
+        </div>
+        <button id="btn-create" class="btn" onclick="openCreatePopup()">
+            create
+        </button>
+    </div>
     <div id="main-container">
         <div id="tasks">
             <div class="task-column dnd-state-0" ondrop="dropOnStateColumn(event)" ondragover="allowDrop(event)">
@@ -48,10 +64,10 @@
             <input type="hidden" id="task-priority">
 
             <div class="popup-item">
-                <span id="popup-priority-idea" class="priority-none" onclick="setPriorityIdea()">idea</span>
-                <span id="popup-priority-low" class="priority-none" onclick="setPriorityLow()">low</span>
-                <span id="popup-priority-med" class="priority-none" onclick="setPriorityMed()">med</span>
-                <span id="popup-priority-high" class="priority-none" onclick="setPriorityHigh()">high</span>
+                <span id="popup-priority-idea" class="priority-none" onclick="selectPriorty(PRIORITY_IDEA)">idea</span>
+                <span id="popup-priority-low" class="priority-none" onclick="selectPriorty(PRIORITY_LOW)">low</span>
+                <span id="popup-priority-med" class="priority-none" onclick="selectPriorty(PRIORITY_MED)">med</span>
+                <span id="popup-priority-high" class="priority-none" onclick="selectPriorty(PRIORITY_HIGH)">high</span>
 
                 <button class="btn" id="popup-create-task" onclick="createOrUpdateTask()">submit</button>
             </div>

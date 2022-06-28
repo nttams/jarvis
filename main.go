@@ -7,10 +7,31 @@ import (
 	dh "data_handler"
 )
 
+var tasks_templates = template.Must(template.ParseFiles(
+		"tmpl/index.html",
+		"tmpl/tasks.html",
+		"tmpl/media.html",
+		"tmpl/images.html",
+		"tmpl/templates.html",
+	))
+
+func rootHandler(w http.ResponseWriter, r* http.Request) {
+	tasks_templates.ExecuteTemplate(w, "index.html", 0)
+}
+
+func iconHandler(w http.ResponseWriter, r* http.Request) {
+	http.ServeFile(w, r, "./static/img/favicon.ico")
+}
+
 func tasksHandler(w http.ResponseWriter, r *http.Request) {
+	parts := r.URL.Path[len("/tasks/"):]
+
 	if r.Method == "GET" {
-		// todo: ignore all details url?
-		getAllTasks(w)
+		if len(parts) == 0 {
+			http.Redirect(w, r, "/tasks/all", http.StatusFound)
+		} else {
+			tasks_templates.ExecuteTemplate(w, "tasks.html", dh.GetAllTasksForTmpl(parts))
+		}
 	} else if r.Method == "POST" {
 
 		var req dh.JsonRequest
@@ -31,40 +52,18 @@ func tasksHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getAllTasks(w http.ResponseWriter) {
-	t, _ := template.ParseFiles("static/html/tasks.html", "static/html/templates.html")
-
-	t.Execute(w, dh.GetAllTasksForTmpl())
-}
-
 // todo: make these generic
 func k50Handler(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("static/html/images.html", "static/html/templates.html")
-	paths := dh.GetFileList("res/k50")
-
-	t.Execute(w, paths)
+	tasks_templates.ExecuteTemplate(w, "images.html", dh.GetFileList("res/k50"))
 }
 
 func tnpdHandler(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("static/html/images.html", "static/html/templates.html")
-	paths := dh.GetFileList("res/tnpd")
-
-	t.Execute(w, paths)
+	tasks_templates.ExecuteTemplate(w, "images.html", dh.GetFileList("res/tnpd"))
 }
 
 // todo:
 func mediaHandler(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("static/html/media.html", "static/html/templates.html")
-	t.Execute(w, 0)
-}
-
-func iconHandler(w http.ResponseWriter, r* http.Request) {
-	http.ServeFile(w, r, "./static/img/favicon.ico")
-}
-
-func rootHandler(w http.ResponseWriter, r* http.Request) {
-	t, _ := template.ParseFiles("static/html/index.html", "static/html/templates.html")
-	t.Execute(w, 0)
+	tasks_templates.ExecuteTemplate(w, "media.html", 0)
 }
 
 func main() {
@@ -72,11 +71,11 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	http.HandleFunc("/", rootHandler)
+	http.HandleFunc("/favicon.ico", iconHandler)
 	http.HandleFunc("/tasks/", tasksHandler)
+	http.HandleFunc("/media/", mediaHandler)
 	http.HandleFunc("/k50/", k50Handler)
 	http.HandleFunc("/tnpd/", tnpdHandler)
-	http.HandleFunc("/media/", mediaHandler)
-	http.HandleFunc("/favicon.ico", iconHandler)
 
 	http.ListenAndServe(":8080", nil)
 }

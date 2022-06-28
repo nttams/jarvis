@@ -1,4 +1,5 @@
-const ESCAPE_KEY = 27
+const HOST = "http://localhost:8080/"
+const TASK_URL = "tasks/"
 
 const PRIORITY_IDEA = 0
 const PRIORITY_LOW = 1
@@ -15,13 +16,11 @@ const POPUP = document.querySelector("#popup");
 
 function initHotKeys() {
     window.onload=function() {
-        document.onkeyup=key_event;
-    }
-}
-
-function key_event(e) {
-    if (e.keyCode == ESCAPE_KEY) {
-        hidePopup()
+        document.onkeyup = (e) => {
+            if (e.key == "Escape") {
+                hidePopup()
+            }
+        };
     }
 }
 
@@ -33,44 +32,6 @@ function showPopup() {
 function hidePopup() {
     OVERLAY.style.display = "none"
     POPUP.style.display = "none"
-}
-
-function initCreateButtion() {
-    const tasks_div = document.createElement("div")
-    tasks_div.setAttribute("id", "tasks-header")
-
-    // create button
-    const btn = document.createElement("button")
-    btn.onclick = openCreatePopup
-    btn.setAttribute("id", "btn-create")
-    btn.classList.add("btn")
-    btn.innerHTML = "create"
-
-    // create recycle bin
-    const recycle_bin = document.createElement("div")
-    recycle_bin.setAttribute("id", "recycle-bin")
-    recycle_bin.innerHTML = "🗑"
-
-    recycle_bin.addEventListener("drop", (event) => {
-        dropOnRecycleBin(event)
-    })
-
-    recycle_bin.addEventListener("dragover", (event) => {
-        allowDrop(event)
-    })
-
-    recycle_bin.addEventListener("dragenter", () => {
-        recycle_bin.classList.add("recycle-bin-active")
-    })
-
-    recycle_bin.addEventListener("dragleave", () => {
-        recycle_bin.classList.remove("recycle-bin-active")
-    })
-
-    tasks_div.appendChild(recycle_bin)
-    tasks_div.appendChild(btn)
-
-    document.querySelector("#header").appendChild(tasks_div)
 }
 
 function initPriority() {
@@ -172,7 +133,7 @@ function sendUpdateStateTask(id, state) {
 }
 
 function sendDeleteTask(id) {
-    if (!confirm("sure?")) return;
+    if (!confirm("deleting task-" + id + ", sure?")) return;
     let data = {
         command: "delete-task",
         task: {
@@ -183,66 +144,41 @@ function sendDeleteTask(id) {
 }
 
 function query(data) {
-    // todo: improve url, don't just copy
-    fetch("http://localhost:8080/tasks/", {
+    fetch(HOST + TASK_URL + getLastElementInUrl(), {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(data)
     }).then(res => {
-        // todo: go to redirect from response
-        window.location.href = "http://localhost:8080/tasks"
+        window.location.href = res.url
     })
-}
-
-function setPriorityIdea() {
-    selectPriorty(PRIORITY_IDEA)
-}
-
-function setPriorityLow() {
-    selectPriorty(PRIORITY_LOW)
-}
-
-
-function setPriorityMed() {
-    selectPriorty(PRIORITY_MED)
-}
-
-
-function setPriorityHigh() {
-    selectPriorty(PRIORITY_HIGH)
 }
 
 // todo: ugly, improve this
 function selectPriorty(value) {
-    resetPriorty()
-
-    document.querySelector("#task-priority").value = value
-
-    if (value == PRIORITY_IDEA){
-        document.querySelector("#popup-priority-idea").className = "priority-blink priority-idea"
-    }
-
-    if (value == PRIORITY_LOW){
-        document.querySelector("#popup-priority-low").className = "priority-blink priority-low"
-    }
-
-    if (value == PRIORITY_MED){
-        document.querySelector("#popup-priority-med").className = "priority-blink priority-med"
-    }
-
-    if (value == PRIORITY_HIGH){
-        document.querySelector("#popup-priority-high").className = "priority-blink priority-high"
-    }
-}
-
-function resetPriorty() {
     document.querySelector("#popup-priority-idea").className = "priority-none"
     document.querySelector("#popup-priority-low").className = "priority-none"
     document.querySelector("#popup-priority-med").className = "priority-none"
     document.querySelector("#popup-priority-high").className = "priority-none"
-}
 
-// drap and drop
+    document.querySelector("#task-priority").value = value
+
+    switch (value) {
+        case PRIORITY_IDEA:
+            document.querySelector("#popup-priority-idea").className = "priority-blink priority-idea"
+            break;
+        case PRIORITY_LOW:
+            document.querySelector("#popup-priority-low").className = "priority-blink priority-low"
+            break;
+        case PRIORITY_MED:
+            document.querySelector("#popup-priority-med").className = "priority-blink priority-med"
+            break;
+        case PRIORITY_HIGH:
+            document.querySelector("#popup-priority-high").className = "priority-blink priority-high"
+            break;
+        default:
+            console.error("not recognized priorty")
+    }
+}
 
 function drag(e, id) {
     e.dataTransfer.setData("id", id)
@@ -285,12 +221,32 @@ function dropOnRecycleBin(e) {
     sendDeleteTask(id)
 }
 
-function init() {
-    initPriority()
-    initCreateButtion()
-    initHotKeys()
+function changeProject(project) {
+    project = project.split(" ")[0]
 
+    fetch(HOST + TASK_URL + project, {
+        method: "GET",
+    }).then(res => {
+        window.location.href = res.url
+    })
+}
+
+function getLastElementInUrl() {
+    url_parts = window.location.href.split("/")
+    return url_parts[url_parts.length - 1]
+}
+
+function init() {
+    initHotKeys()
+    initPriority()
+
+    // move tasks header to navigator
+    document.querySelector("#header").appendChild(document.querySelector("#tasks-header"))
     POPUP.querySelector("#close-popup").onclick = hidePopup;
+
+    // todo: ugly :D
+    project = getLastElementInUrl()
+    document.querySelector("#project-filter").value = project;
 }
 
 init()
