@@ -24,8 +24,11 @@ type ByPriority []Task
 func (a ByPriority) Len() int { return len(a) }
 func (a ByPriority) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 
-// priority (dec) --> created time (inc) --> id (inc)
+// isRecent --> priority (dec) --> created time (inc) --> id (inc)
 func (a ByPriority) Less(i, j int) bool {
+	if isRecent(a[i].LastUpdateTime) && !isRecent(a[j].LastUpdateTime) { return false }
+	if !isRecent(a[i].LastUpdateTime) && isRecent(a[j].LastUpdateTime) { return true }
+
 	if a[i].Priority < a[j].Priority { return true }
 	if a[i].Priority > a[j].Priority { return false }
 
@@ -41,8 +44,11 @@ type ByLastUpdate []Task
 func (a ByLastUpdate) Len() int { return len(a) }
 func (a ByLastUpdate) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 
-// last update (dec) --> priority (dec) --> created time (inc) --> id (inc)
+// isRecent --> last update (dec) --> priority (dec) --> created time (inc) --> id (inc)
 func (a ByLastUpdate) Less(i, j int) bool {
+	if isRecent(a[i].LastUpdateTime) && !isRecent(a[j].LastUpdateTime) { return false }
+	if !isRecent(a[i].LastUpdateTime) && isRecent(a[j].LastUpdateTime) { return true }
+
 	if a[i].LastUpdateTime.Before(a[j].LastUpdateTime) { return true }
 	if a[i].LastUpdateTime.After(a[j].LastUpdateTime) { return false }
 
@@ -71,6 +77,7 @@ type TaskForTmpl struct {
 	CreatedTime string
 	LastUpdateTime string
 	LivedTime string
+	IsRecent bool
 }
 
 type ProjectInfo struct {
@@ -240,7 +247,15 @@ func ConvertTaskToTaskForTmpl(task *Task) (result TaskForTmpl) {
 	result.LastUpdateTime = convertTimeToString(&task.LastUpdateTime)
 	result.LivedTime = generatePrettyAgeForTag(task.CreatedTime)
 
+	result.IsRecent = isRecent(task.LastUpdateTime)
+
 	return
+}
+
+func isRecent(lastUpdateTime time.Time) bool {
+	live_time := time.Now().Sub(lastUpdateTime).Milliseconds() / 1000
+	// todo: config this recent time
+	return live_time < 8
 }
 
 func generatePrettyAgeForTag(createdDate time.Time) string {

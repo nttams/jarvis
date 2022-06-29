@@ -46,12 +46,6 @@ function initPriority() {
 
         priorities[i].innerHTML = names[priority_index]
         priorities[i].classList.add(classes[priority_index])
-
-        // high priority tasks in done column don't blink
-        if ((priority_index == PRIORITY_HIGH) && !priorities[i].classList.contains("state-2")) {
-            priorities[i].classList.add("priority-blink")
-        }
-
     }
 }
 
@@ -81,11 +75,16 @@ function openCreatePopup() {
 }
 
 function createOrUpdateTask() {
-    id = parseInt(document.querySelector("#task-id").value)
-    project = document.querySelector("#task-project").value
-    title = document.querySelector("#task-title").value
-    content = document.querySelector("#task-content").value
-    priority = parseInt(document.querySelector("#task-priority").value)
+    id = parseInt(document.querySelector("#task-id").value.trim())
+    project = document.querySelector("#task-project").value.trim()
+    title = document.querySelector("#task-title").value.trim()
+    content = document.querySelector("#task-content").value.trim()
+    priority = parseInt(document.querySelector("#task-priority").value.trim())
+
+    if (project == "" || title == "" || content == "") {
+        alert("project, title, and content must not be empty")
+        return
+    }
 
     if (id != -1) {
         sendUpdateTask(id, project, title, content, priority)
@@ -164,24 +163,30 @@ function selectPriorty(value) {
 
     switch (value) {
         case PRIORITY_IDEA:
-            document.querySelector("#popup-priority-idea").className = "priority-blink priority-idea"
+            document.querySelector("#popup-priority-idea").className = "priority-idea"
             break;
         case PRIORITY_LOW:
-            document.querySelector("#popup-priority-low").className = "priority-blink priority-low"
+            document.querySelector("#popup-priority-low").className = "priority-low"
             break;
         case PRIORITY_MED:
-            document.querySelector("#popup-priority-med").className = "priority-blink priority-med"
+            document.querySelector("#popup-priority-med").className = "priority-med"
             break;
         case PRIORITY_HIGH:
-            document.querySelector("#popup-priority-high").className = "priority-blink priority-high"
+            document.querySelector("#popup-priority-high").className = "priority-high"
             break;
         default:
             console.error("not recognized priorty")
     }
 }
 
-function drag(e, id) {
+// since only "onDrop" can access transferData, this shared var is used for dragenver and dragleave
+// todo: NOT a good solution, find something else
+var current_state = -1
+
+function drag(e, id, state) {
     e.dataTransfer.setData("id", id)
+    e.dataTransfer.setData("state", state)
+    current_state = state
 }
 
 function allowDrop(e) {
@@ -189,35 +194,43 @@ function allowDrop(e) {
 }
 
 function dropOnStateColumn(e) {
-    var id = parseInt(e.dataTransfer.getData("id"))
-
-    let state = -1
-
-    if (e.target.classList.contains("dnd-state-0")) {
-        state = STATE_TODO
-    }
-    if (e.target.classList.contains("dnd-state-1")) {
-        state = STATE_DOING
-    }
-    if (e.target.classList.contains("dnd-state-2")) {
-        state = STATE_DONE
-    }
-
-    if (state == -1) return
-
-    // moving to same state, do nothing
-    if (document.querySelector("#T-" + id)
-        .querySelector(".priority")
-        .classList.contains("state-" + state)) {
+    if (!e.target.classList.contains("task-column"))
         return
-    }
 
-    sendUpdateStateTask(id, state)
+    let old_state = parseInt(e.dataTransfer.getData("state"))
+    let state = getStateFromClassList(e.target.classList)
+
+    if (state != old_state) {
+        let id = parseInt(e.dataTransfer.getData("id"))
+        sendUpdateStateTask(id, state)
+        current_state = -1
+    }
+}
+
+function dragEnterColumn(e) {
+    if (!e.target.classList.contains("task-column"))
+        return
+
+    let state = getStateFromClassList(e.target.classList)
+
+    if (state != current_state)
+        e.target.classList.add('task-column-drag-over');
+}
+
+function getStateFromClassList(classList) {
+    if (classList.contains("dnd-state-0")) return STATE_TODO
+    if (classList.contains("dnd-state-1")) return STATE_DOING
+    if (classList.contains("dnd-state-2")) return STATE_DONE
+}
+
+function dragLeaveColumn(e) {
+    if (e.target.classList.contains("task-column"))
+        e.target.classList.remove('task-column-drag-over');
 }
 
 function dropOnRecycleBin(e) {
-    document.querySelector("#recycle-bin").classList.remove("recycle-bin-active")
-    var id = parseInt(e.dataTransfer.getData("id"))
+    document.querySelector("#recycle-bin").classList.remove("recycle-bin-drag-over")
+    let id = parseInt(e.dataTransfer.getData("id"))
     sendDeleteTask(id)
 }
 

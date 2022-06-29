@@ -32,34 +32,47 @@
     background-color: @bg-light;
     border-radius: 10px;
 
-    #project-filter {
-        background-color: @bg-dark;
+    .tasks-header-icon {
+        padding: 7px;
+        margin: 5px;
+        font-size: 20px;
+        cursor: pointer;
+        border-radius: 10px;
         border: none;
-        border-radius: 5px;
         color: white;
-        margin-left: 20px;
-        padding: 5px;
         font-weight: bold;
+    }
 
+    #settings {
+        .tasks-header-icon()
+    }
+
+    #settings:hover {
+        background-color: @bg-dark;
+    }
+
+    #btn-create {
+        .tasks-header-icon();
+    }
+
+    #btn-create:hover {
+        background-color: @bg-dark;
+    }
+
+    #project-filter {
+        .tasks-header-icon();
+
+        background-color: @bg-dark;
         font-family: @default-font;
         font-size: @default-font-size;
     }
 
     #recycle-bin {
-        padding: 7px;
-        margin: 10px;
-        font-size: 20px;
-        cursor: pointer;
-        border-radius: 10px;
+        .tasks-header-icon();
     }
 
-    .recycle-bin-active {
+    .recycle-bin-drag-over {
        background-color: @bg-dark;
-    }
-
-    #btn-create {
-        margin: 5px;
-        margin-right: 10px;
     }
 }
 
@@ -103,7 +116,9 @@
     background-color: @priority-none;
 }
 
-.priority-blink {
+.recent {
+    .tag();
+    background-color: @task-recent;
     animation: blinker 1s linear infinite;
 }
 
@@ -123,6 +138,7 @@
         padding: 2px;
         border-radius: 10px;
         flex-basis: 100%;
+        border: 1px solid transparent;
 
         .title-column {
             padding-left: 10px;
@@ -183,6 +199,10 @@
                 background-color: @task-tag;
             }
         }
+    }
+
+    .task-column-drag-over {
+        border-color: white;
     }
 }
 

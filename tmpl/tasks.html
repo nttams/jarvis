@@ -1,48 +1,54 @@
 <html>
 <head>
     <title>tasks</title>
-    {{template "importer" .}}
+    {{ template "importer" . }}
     <link rel="stylesheet/less" type="text/css" href="/static/less/tasks.less" />
 </head>
 <body>
-    {{template "header" .}}
+    {{ template "header" . }}
     <div id="tasks-header">
+        <div id="btn-create" onclick="openCreatePopup()">
+            📄
+        </div>
+        <div id="recycle-bin" ondrop="dropOnRecycleBin(event)"
+                              ondragover="allowDrop(event)"
+                              ondragenter="this.classList.add('recycle-bin-drag-over')"
+                              ondragleave="this.classList.remove('recycle-bin-drag-over')">
+            🗑
+        </div>
+        <div id="settings" onclick="console.log('going to settings')">
+            🛠
+        </div>
         <select id="project-filter" onchange="changeProject(this.value)">
             {{ range .ProjectInfos }}
                 <option value="{{ .Project }}"> {{ .Project }} ({{ .Count }}) </option>
             {{ end }}
         </select>
-        <div id="recycle-bin" ondrop="dropOnRecycleBin(event)"
-                              ondragover="allowDrop(event)"
-                              ondragenter="this.classList.add('recycle-bin-active')"
-                              ondragleave="this.classList.remove('recycle-bin-active')">
-            🗑
-        </div>
-        <button id="btn-create" class="btn" onclick="openCreatePopup()">
-            create
-        </button>
     </div>
     <div id="main-container">
         <div id="tasks">
-            <div class="task-column dnd-state-0" ondrop="dropOnStateColumn(event)" ondragover="allowDrop(event)">
+            <div class="task-column dnd-state-0" ondrop="dropOnStateColumn(event)"
+                                                 ondragover="allowDrop(event)"
+                                                 ondragenter="dragEnterColumn(event)"
+                                                 ondragleave="dragLeaveColumn(event)">
                 <p class="title-column">todo ({{ .NumberTodo }})</p>
-                {{ range .Todo }}
-                    {{template "task" .}}
-                {{ end }}
+                {{ template "tasks" .Todo }}
             </div>
 
-            <div class="task-column dnd-state-1" ondrop="dropOnStateColumn(event)" ondragover="allowDrop(event)">
+            <div class="task-column dnd-state-1" ondrop="dropOnStateColumn(event)"
+                                                 ondragover="allowDrop(event)"
+                                                 ondragenter="dragEnterColumn(event)"
+                                                 ondragleave="dragLeaveColumn(event)">
                 <p class="title-column">doing ({{ .NumberDoing }})</p>
-                {{ range .Doing }}
-                    {{template "task" .}}
-                {{ end }}
+                {{ template "tasks" .Doing }}
             </div>
 
-            <div class="task-column dnd-state-2" ondrop="dropOnStateColumn(event)" ondragover="allowDrop(event)">
+            <div class="task-column dnd-state-2" ondrop="dropOnStateColumn(event)"
+                                                 ondragover="allowDrop(event)"
+                                                 ondragenter="dragEnterColumn(event)"
+                                                 ondragleave="dragLeaveColumn(event)">
                 <p class="title-column">done ({{ .NumberDoneFiltered }}/{{ .NumberDone }})</p>
-                {{ range .Done }}
-                    {{template "task" .}}
-                {{ end }}
+                {{ template "tasks" .Done }}
             </div>
         </div>
 
@@ -75,46 +81,51 @@
         </div>
     </div>
 
-    {{template "footer" .}}
+    {{ template "footer" . }}
 
     <script src="/static/js/tasks.js"></script>
 </body>
 </html>
 
-{{ define "task" }}
+{{ define "tasks" }}
+    {{ range . }}
+        {{ template "task" . }}
+    {{ end }}
+{{ end }}
 
+{{ define "task" }}
 <!-- id="T-" for drag and drop -->
 <div class="task" id="T-{{ .Id }}">
     <div class="task-header">
         <span class="task-title" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
             {{.Title}}
         </span>
-        <span class="task-anchor" draggable="true" ondragstart="drag(event, {{.Id}})">
+        <span class="task-anchor" draggable="true" ondragstart="drag(event, {{ .Id }}, {{ .State }})">
             ⋮
         </span>
     </div>
     <p class="task-content">{{ .Content }}</p>
     <div>
-            <span class="task-project" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
-                {{ .Project }}
+        {{ if .IsRecent }} <span class="recent">recent</span> {{ end }}
+        <span class="task-project" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
+            {{ .Project }}
+        </span>
+        <span class="task-id" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
+            T-{{ .Id }}
+        </span>
+        <span class="tooltip">
+            <span class="live-time" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
+                {{ .LivedTime }}
             </span>
-            <span class="task-id" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
-                T-{{ .Id }}
+            <span class="tooltiptext">
+                last update: {{ .LastUpdateTime }}
+                <br>
+                created on: {{ .CreatedTime }}
             </span>
-            <span class="tooltip">
-                <span class="live-time" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
-                    {{ .LivedTime }}
-                </span>
-                <span class="tooltiptext">
-                    Last update: {{ .LastUpdateTime }}
-                    <br>
-                    created on: {{ .CreatedTime }}
-                </span>
-            </span>
-            <span class="priority state-{{.State}}" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
-                {{ .Priority }}
-            </span>
+        </span>
+        <span class="priority state-{{.State}}" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
+            {{ .Priority }}
+        </span>
     </div>
 </div>
-
 {{ end }}
