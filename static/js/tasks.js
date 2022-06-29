@@ -1,4 +1,4 @@
-const HOST = "http://localhost:8080/"
+const HOST = "http://192.168.1.99:8080/"
 const TASK_URL = "tasks/"
 
 const PRIORITY_IDEA = 0
@@ -26,7 +26,7 @@ function initHotKeys() {
 
 function showPopup() {
     OVERLAY.style.display = "block"
-    POPUP.style.display = "block"
+    POPUP.style.display = "flex"
 }
 
 function hidePopup() {
@@ -132,7 +132,6 @@ function sendUpdateStateTask(id, state) {
 }
 
 function sendDeleteTask(id) {
-    if (!confirm("deleting task-" + id + ", sure?")) return;
     let data = {
         command: "delete-task",
         task: {
@@ -183,8 +182,10 @@ function selectPriorty(value) {
 // todo: NOT a good solution, find something else
 var current_state = -1
 
-function drag(e, id, state) {
+function drag(e, id, state, project, title) {
     e.dataTransfer.setData("id", id)
+    e.dataTransfer.setData("project", project)
+    e.dataTransfer.setData("title", title)
     e.dataTransfer.setData("state", state)
     current_state = state
 }
@@ -231,6 +232,12 @@ function dragLeaveColumn(e) {
 function dropOnRecycleBin(e) {
     document.querySelector("#recycle-bin").classList.remove("recycle-bin-drag-over")
     let id = parseInt(e.dataTransfer.getData("id"))
+    let project = e.dataTransfer.getData("project")
+    let title = e.dataTransfer.getData("title")
+
+    warning = `task-${id}\nproject: ${project}\ntitle: ${title}\n\ndelete?`
+    if (!confirm(warning)) return;
+
     sendDeleteTask(id)
 }
 
@@ -252,6 +259,7 @@ function getLastElementInUrl() {
 function init() {
     initHotKeys()
     initPriority()
+    hidePopup()
 
     // move tasks header to navigator
     document.querySelector("#header").appendChild(document.querySelector("#tasks-header"))

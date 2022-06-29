@@ -1,12 +1,50 @@
-package data_handler
+package task_manager
 
 import (
 	"os"
-	"encoding/json"
 	"time"
-	"strconv"
 	"sort"
+	"strconv"
+	"net/http"
+	"encoding/json"
+	"html/template"
 )
+
+const DATA_PATH = "./static/task_manager_data/data/"
+
+var templates = template.Must(template.ParseFiles(
+	"tmpl/tasks.html",
+	"tmpl/templates.html",
+))
+
+func HandleRequest(w http.ResponseWriter, r *http.Request) {
+	taskGroup := r.URL.Path[len("/tasks/"):]
+
+	if r.Method == "GET" {
+		if len(taskGroup) == 0 {
+			http.Redirect(w, r, "/tasks/all", http.StatusFound)
+		} else {
+			templates.ExecuteTemplate(w, "tasks.html", getAllTasksForTmpl(taskGroup))
+		}
+	} else if r.Method == "POST" {
+
+		var req JsonRequest
+		_ = json.NewDecoder(r.Body).Decode(&req)
+
+		switch req.Command {
+			case "create-task":
+				createTask(req.Task.Project, req.Task.Title, req.Task.Content, req.Task.Priority)
+			case "update-task":
+				updateTask(req.Task.Id, req.Task.Project, req.Task.Title, req.Task.Content, req.Task.Priority)
+			case "update-task-state":
+				updateTaskState(req.Task.Id, req.Task.State)
+			case "delete-task":
+				deleteTask(req.Task.Id)
+			default:
+				panic("invalid command")
+		}
+	}
+}
 
 type Task struct {
 	Id int
@@ -116,7 +154,7 @@ const (
 	High
 )
 
-func GetAllTasksForTmpl(project string) (result TasksForTmpl) {
+func getAllTasksForTmpl(project string) (result TasksForTmpl) {
 	tasks := readAllTasks()
 	if project != "all" {
 		filteredTasks := filterProjectFromTasks(tasks, project)
@@ -148,15 +186,15 @@ func convertTasksToTasksForTmpl(tasks []Task) (result TasksForTmpl) {
 	sort.Sort(sort.Reverse(ByLastUpdate(done)))
 
 	for _, task := range todo {
-		result.Todo = append(result.Todo, ConvertTaskToTaskForTmpl(&task))
+		result.Todo = append(result.Todo, convertTaskToTaskForTmpl(&task))
 	}
 
 	for _, task := range doing {
-		result.Doing = append(result.Doing, ConvertTaskToTaskForTmpl(&task))
+		result.Doing = append(result.Doing, convertTaskToTaskForTmpl(&task))
 	}
 
 	for _, task := range done {
-		result.Done = append(result.Done, ConvertTaskToTaskForTmpl(&task))
+		result.Done = append(result.Done, convertTaskToTaskForTmpl(&task))
 	}
 
 	result.NumberTodo = len(todo)
@@ -236,7 +274,7 @@ func divideTasksIntoGroups(tasks []Task) (todo []Task, doing []Task, done[]Task)
 	return
 }
 
-func ConvertTaskToTaskForTmpl(task *Task) (result TaskForTmpl) {
+func convertTaskToTaskForTmpl(task *Task) (result TaskForTmpl) {
 	result.Id = task.Id
 	result.Project = task.Project
 	result.Title = task.Title
@@ -311,32 +349,6 @@ func convertTimeToString(t *time.Time) string {
 		min_str
 }
 
-func (s State) ToString() string {
-	switch s {
-	case Todo:
-		return "todo"
-	case Doing:
-		return "doing"
-	case Done:
-		return "done"
-	}
-	return "unknown"
-}
-
-func (p Priority) ToString() string {
-	switch p {
-	case Idea:
-		return "idea"
-	case Low:
-		return "low"
-	case Med:
-		return "med"
-	case High:
-		return "high"
-	}
-	return "unknown"
-}
-
 func saveTask(task *Task) error {
 	filename := getFilename(task.Id)
 
@@ -346,13 +358,12 @@ func saveTask(task *Task) error {
 	return os.WriteFile(filename, encoded, 0600)
 }
 
-func DeleteTask(id int) {
+func deleteTask(id int) {
 	os.Remove(getFilename(id))
 }
 
 func getAFreeId() int {
-	path := "./static/data"
-	file, _ := os.Open(path)
+	file, _ := os.Open(DATA_PATH)
 
 	files, _ := file.Readdir(0)
 
@@ -364,11 +375,10 @@ func getAFreeId() int {
 			max = temp
 		}
 	}
-
 	return max + 1;
 }
 
-func CreateTask(project string, title string, content string, priority Priority) {
+func createTask(project string, title string, content string, priority Priority) {
 	id := getAFreeId()
 
 	now := time.Now()
@@ -376,7 +386,7 @@ func CreateTask(project string, title string, content string, priority Priority)
 	saveTask(&task)
 }
 
-func UpdateTask(id int, project string, title string, content string, priority Priority) {
+func updateTask(id int, project string, title string, content string, priority Priority) {
 	task := readTask(id)
 
 	// changing attribute in done task does not update lastUpdateTime
@@ -391,7 +401,7 @@ func UpdateTask(id int, project string, title string, content string, priority P
 	saveTask(&task)
 }
 
-func UpdateTaskState(id int, state State) {
+func updateTaskState(id int, state State) {
 	task := readTask(id)
 
 	task.State = State(state);
@@ -402,20 +412,19 @@ func UpdateTaskState(id int, state State) {
 func readTask(id int) Task {
 	encoded, _ := os.ReadFile(getFilename(id))
 	var task Task
-	_ = json.Unmarshal(encoded, &task)
+	json.Unmarshal(encoded, &task)
 	return task
 }
 
 func readAllTasks() []Task {
-	path := "./static/data"
-	file, _ := os.Open(path)
+	file, _ := os.Open(DATA_PATH)
 
 	files, _ := file.Readdir(0)
 
 	result := []Task{}
 
 	for _, v := range files {
-		encoded, _ := os.ReadFile(path + "/" + v.Name())
+		encoded, _ := os.ReadFile(DATA_PATH + v.Name())
 		var task Task
 		_ = json.Unmarshal(encoded, &task)
 		result = append(result, task)
@@ -424,20 +433,6 @@ func readAllTasks() []Task {
 	return result
 }
 
-func GetFileList(folder string) []string {
-	path := "./static/" + folder
-	file, _ := os.Open(path)
-
-	files, _ := file.Readdir(0)
-
-	result := []string{}
-
-	for _, v := range files {
-		result = append(result, path[len("."):] + "/" + v.Name())
-	}
-	return result
-}
-
 func getFilename(id int) string {
-	return "./static/data/" + strconv.Itoa(id) + ".json"
+	return DATA_PATH + strconv.Itoa(id) + ".json"
 }

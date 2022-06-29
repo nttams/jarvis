@@ -1,17 +1,25 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <!-- todo: fix this title -->
-    <title>images</title>
-    {{template "importer" .}}
+    <title> {{ .Title }} </title>
+    {{ template "importer" . }}
     <link rel="stylesheet/less" type="text/css" href="/static/less/images.less" />
 </head>
 <body>
-    {{template "header" .}}
+    {{ template "header" . }}
+    <div id="images-header">
+        <select id="width-selector" onchange="changeWidth(this.value)">
+        </select>
+    </div>
+    {{ range .Paths }}
+        <a href="{{ . }}" target="_blank" rel="noopener noreferrer">
+            <img src="{{ . }}" alt="notfound" loading="lazy">
+        </a>
+    {{ end }}
 
-    {{range .}}
-        <img src="{{.}}" alt="notfound" loading="lazy" style="width: 30%">
-    {{end}}
+    {{ template "footer" . }}
 
-    {{template "footer" .}}
+    <script src="/static/js/images.js"></script>
 </body>
 </html>

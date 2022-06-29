@@ -1,4 +1,5 @@
 @import "variables";
+@import "main";
 
 .btn {
     width: 80px;
@@ -21,16 +22,7 @@
 }
 
 #tasks-header {
-    margin-left: auto;
-    margin-right: 10px;
-    margin-top: 0;
-    margin-bottom: 0;
-
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    background-color: @bg-light;
-    border-radius: 10px;
+    .header-child();
 
     .tasks-header-icon {
         padding: 7px;
@@ -61,10 +53,7 @@
 
     #project-filter {
         .tasks-header-icon();
-
-        background-color: @bg-dark;
-        font-family: @default-font;
-        font-size: @default-font-size;
+        font-size: 16px;
     }
 
     #recycle-bin {
@@ -89,6 +78,7 @@
     background-color: @bg-dark;
     margin: 2px 0px;
     cursor: pointer;
+    height: fit-content;
 }
 
 .priority-idea {
@@ -111,15 +101,10 @@
     background-color: @priority-high;
 }
 
-.priority-none {
-    .tag();
-    background-color: @priority-none;
-}
-
 .recent {
     .tag();
     background-color: @task-recent;
-    animation: blinker 1s linear infinite;
+    animation: blinker 2s linear infinite;
 }
 
 @keyframes blinker {
@@ -133,6 +118,8 @@
     flex-direction: row;
 
     .task-column {
+        display: flex;
+        flex-direction: column;
         background-color: @bg-dark;
         margin: 10px;
         padding: 2px;
@@ -141,16 +128,15 @@
         border: 1px solid transparent;
 
         .title-column {
-            padding-left: 10px;
-            margin-top: 5px;
-            margin-bottom: 5px;
+            padding: 10px;
+            margin: 0;
             font-weight: bold;
             width: fit-content;
         }
 
         .task {
             border-radius: 10px;
-            margin: 20px 10px;
+            margin: 10px 5px;
             padding: 10px;
             background-color: @bg-light;
             min-height: 120px;
@@ -219,24 +205,24 @@
 }
 
 #popup {
-    display: none;
+    flex-direction: column;
     position: fixed;
     top: 50%;
     left: 50%;
-    width: 40%;
+
+    width: 80%;
+    max-width: 500px;
     height: fit-content;
-    padding: 20px;
+    padding: 10px;
     transform: translate(-50%, -50%);
     z-index: 20;
-    border: none;
+    border: 1px solid white;
     border-radius: 10px;
     background-color: @bg-dark;
 
-    padding-top: 0;
-
     .task-font {
-        font-family: 'Ubuntu', sans-serif;
-        font-size: 18px;
+        font-family: @default-font;
+        font-size: @default-font-size;
         background-color: @bg-light;
         color: white;
         padding: 5px;
@@ -249,6 +235,7 @@
         font-weight: bold;
         border: none;
         margin-left: 5px;
+        min-width: 0;
     }
 
     #task-id {
@@ -258,17 +245,11 @@
         cursor: pointer;
     }
 
-    #task-content {
-        .task-font();
-        width: 100%;
-        height: 100px;
-        resize: none;
-    }
-
     #popup-header {
-        margin: 0;
+        display: flex;
+        flex-direction: row;
+        margin: 5px 0;
         padding: 0;
-        margin: 20px 0;
 
         #task-id-label {
             .popup-task-related();
@@ -282,7 +263,7 @@
             border: none;
             cursor: pointer;
             background: none;
-            margin-right: 0;
+            margin-left: auto;
         }
     }
 
@@ -290,25 +271,57 @@
         height: fit-content;
         display: flex;
         flex-direction: row;
+        padding: 10px 0px;
+        margin: 0px;
 
         #task-project {
             .popup-task-related();
-            width: 25%;
+            width: 100px;
+            margin: 0px;
+            margin-right: 5px;
         }
 
         #task-title {
             .popup-task-related();
             flex-grow: 1;
-            margin-right: 0;
+            margin: 0px;
+            margin-left: auto;
+        }
+    }
+
+    #task-content-wrapper {
+        display: flex;
+        padding: 0;
+        margin: 0;
+        #task-content {
+            .task-font();
+            flex-grow: 1;
+            height: 100px;
+            margin: 0;
+            resize: none;
+        }
+    }
+
+    #tags-wrapper {
+        display: flex;
+        flex-direction: row;
+        padding: 5px;
+        align-items: center;
+        margin-bottom: 0px;
+
+        .priority-none {
+            .tag();
+            margin: 0px 2px;
+            background-color: @priority-none;
+        }
+
+        #popup-create-task {
+            margin-left: auto;
         }
     }
 
     .popup-item {
         margin: 10px 5px;
-
-        #popup-create-task {
-            float: right;
-        }
     }
 }
 
@@ -316,20 +329,37 @@
     position: relative;
     display: inline-block;
 
-    .tooltiptext {
-        width: 200px;
+    .tooltip-text {
+        white-space: nowrap;
         padding: 7px 7px;
         border-radius: 10px;
         background-color: #505050;
         color: white;
-        font-size:12px;
+        font-size:14px;
         text-align: left;
         visibility: hidden;
         position: absolute;
+        top: 30px;
+        left: 0px;
         z-index: 1;
+    }
+
+    #tooltip-recycle-bin {
+        top: 40px;
     }
 }
 
-.tooltip:hover .tooltiptext {
+.tooltip:hover .tooltip-text {
     visibility: visible;
+}
+
+
+@media screen and (max-width: 600px) {
+    #tasks {
+        flex-direction: column;
+    }
+
+    #popup {
+        width: 80%;
+    }
 }

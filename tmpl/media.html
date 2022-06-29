@@ -1,28 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>media</title>
-    {{template "importer" .}}
-    <link rel="stylesheet/less" type="text/css" href="/static/less/media.less" />
+    {{ template "importer" . }}
 </head>
 
 <body>
-    {{template "header" .}}
-
-    <div id="main-container">
-        <div id="main-content">
-
-            <h3>Friends</h3>
-            <select class="selector" id="friends_selector" onchange="change_friend(this.value)"></select>
-            <br><br>
-            <video class="player" id="friends_player" controls>
-                <source src="/static/res/friends/videos/s01e01.mp4" type="video/mp4 ">
-                <track label="English" kind="subtitles" srclang="en" src="/static/res/friends/sub/s01e01.vtt" default>
-            </video>
-
-        </div>
-    </div>
-
-    {{template "footer" .}}
+    {{ template "header" . }}
+    this is media page
+    <p>images</p>
+    <p>videos</p>
+    <p>audios</p>
+    {{ template "footer" . }}
 </body>
 </html>

@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <title>tasks</title>
     {{ template "importer" . }}
@@ -6,20 +7,23 @@
 </head>
 <body>
     {{ template "header" . }}
-    <div id="tasks-header">
+    <div id="tasks-header" class="header-child">
         <div id="btn-create" onclick="openCreatePopup()">
             📄
         </div>
-        <div id="recycle-bin" ondrop="dropOnRecycleBin(event)"
+        <div class="tooltip" id="recycle-bin" ondrop="dropOnRecycleBin(event)"
                               ondragover="allowDrop(event)"
                               ondragenter="this.classList.add('recycle-bin-drag-over')"
                               ondragleave="this.classList.remove('recycle-bin-drag-over')">
             🗑
+            <div class="tooltip-text" id="tooltip-recycle-bin">
+                drag task here to delete
+            </div>
         </div>
         <div id="settings" onclick="console.log('going to settings')">
             🛠
         </div>
-        <select id="project-filter" onchange="changeProject(this.value)">
+        <select id="project-filter" title="?" onchange="changeProject(this.value)">
             {{ range .ProjectInfos }}
                 <option value="{{ .Project }}"> {{ .Project }} ({{ .Count }}) </option>
             {{ end }}
@@ -31,28 +35,34 @@
                                                  ondragover="allowDrop(event)"
                                                  ondragenter="dragEnterColumn(event)"
                                                  ondragleave="dragLeaveColumn(event)">
-                <p class="title-column">todo ({{ .NumberTodo }})</p>
-                {{ template "tasks" .Todo }}
+                <span class="title-column">todo ({{ .NumberTodo }})</span>
+                {{ range .Todo }}
+                    {{ template "task" . }}
+                {{ end }}
             </div>
 
             <div class="task-column dnd-state-1" ondrop="dropOnStateColumn(event)"
                                                  ondragover="allowDrop(event)"
                                                  ondragenter="dragEnterColumn(event)"
                                                  ondragleave="dragLeaveColumn(event)">
-                <p class="title-column">doing ({{ .NumberDoing }})</p>
-                {{ template "tasks" .Doing }}
+                <span class="title-column">doing ({{ .NumberDoing }})</span>
+                {{ range .Doing }}
+                    {{ template "task" . }}
+                {{ end }}
             </div>
 
             <div class="task-column dnd-state-2" ondrop="dropOnStateColumn(event)"
                                                  ondragover="allowDrop(event)"
                                                  ondragenter="dragEnterColumn(event)"
                                                  ondragleave="dragLeaveColumn(event)">
-                <p class="title-column">done ({{ .NumberDoneFiltered }}/{{ .NumberDone }})</p>
-                {{ template "tasks" .Done }}
+                <span class="title-column">done ({{ .NumberDoneFiltered }}/{{ .NumberDone }})</span>
+                {{ range .Done }}
+                    {{ template "task" . }}
+                {{ end }}
             </div>
         </div>
 
-        <div id="overlay"></div>
+        <div id="overlay" onclick="hidePopup()"></div>
 
         <div id="popup">
             <div id="popup-header">
@@ -66,10 +76,12 @@
                     <input placeholder="title" class="popup-item" id="task-title">
             </div>
 
-            <textarea placeholder="content" class="popup-item" id="task-content"></textarea>
-            <input type="hidden" id="task-priority">
+            <div id="task-content-wrapper">
+                <textarea placeholder="content" class="popup-item" id="task-content"></textarea>
+            </div>
+                <input type="hidden" id="task-priority">
 
-            <div class="popup-item">
+            <div class="popup-item" id="tags-wrapper">
                 <span id="popup-priority-idea" class="priority-none" onclick="selectPriorty(PRIORITY_IDEA)">idea</span>
                 <span id="popup-priority-low" class="priority-none" onclick="selectPriorty(PRIORITY_LOW)">low</span>
                 <span id="popup-priority-med" class="priority-none" onclick="selectPriorty(PRIORITY_MED)">med</span>
@@ -87,20 +99,14 @@
 </body>
 </html>
 
-{{ define "tasks" }}
-    {{ range . }}
-        {{ template "task" . }}
-    {{ end }}
-{{ end }}
-
 {{ define "task" }}
 <!-- id="T-" for drag and drop -->
 <div class="task" id="T-{{ .Id }}">
     <div class="task-header">
         <span class="task-title" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
-            {{.Title}}
+            {{ .Title }}
         </span>
-        <span class="task-anchor" draggable="true" ondragstart="drag(event, {{ .Id }}, {{ .State }})">
+        <span class="task-anchor" draggable="true" ondragstart="drag(event, {{ .Id }}, {{ .State }}, {{ .Project }}, {{ .Title }})">
             ⋮
         </span>
     </div>
@@ -117,13 +123,11 @@
             <span class="live-time" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
                 {{ .LivedTime }}
             </span>
-            <span class="tooltiptext">
-                last update: {{ .LastUpdateTime }}
-                <br>
-                created on: {{ .CreatedTime }}
+            <span class="tooltip-text">
+                last update: {{ .LastUpdateTime }} <br> created on: {{ .CreatedTime }}
             </span>
         </span>
-        <span class="priority state-{{.State}}" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
+        <span class="priority state-{{ .State }}" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
             {{ .Priority }}
         </span>
     </div>
