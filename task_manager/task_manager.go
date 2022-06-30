@@ -12,11 +12,6 @@ import (
 
 const DATA_PATH = "./static/task_manager_data/data/"
 
-var templates = template.Must(template.ParseFiles(
-	"tmpl/tasks.html",
-	"tmpl/templates.html",
-))
-
 func HandleRequest(w http.ResponseWriter, r *http.Request) {
 	taskGroup := r.URL.Path[len("/tasks/"):]
 
@@ -24,6 +19,10 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 		if len(taskGroup) == 0 {
 			http.Redirect(w, r, "/tasks/all", http.StatusFound)
 		} else {
+			// todo: ineffective, read once please
+			// currently, I don't do that because of testcase
+			// it fails if it cannot find the html file
+			templates := template.Must(template.ParseFiles("tmpl/tasks.html", "tmpl/templates.html"))
 			templates.ExecuteTemplate(w, "tasks.html", getAllTasksForTmpl(taskGroup))
 		}
 	} else if r.Method == "POST" {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"html/template"
 	tm "task_manager"
@@ -37,5 +38,6 @@ func main() {
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
+	fmt.Println("listening on port 8080")
 	http.ListenAndServe(":8080", nil)
 }

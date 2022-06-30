@@ -2,15 +2,32 @@
 <html lang="en">
 <head>
     <title>media</title>
+    <link rel="stylesheet/less" type="text/css" href="/static/less/media.less" />
     {{ template "importer" . }}
 </head>
 
 <body>
     {{ template "header" . }}
-    this is media page
-    <p>images</p>
-    <p>videos</p>
-    <p>audios</p>
+    <div id="main-container">
+        <div id="main-content">
+            {{ range . }}
+                {{ if or (eq .Type "video") (eq .Type "image") }}
+                    <div class="media-item">
+                        <div class="media-type-{{ .Type }}">{{ .Type }}</div>
+                        <a href="/media/{{ .Name }}">{{ .Name }}</a>
+                    </div>
+                {{ end }}
+
+                {{ if eq .Type "youtube" }}
+                    <div class="media-item">
+                        <div class="media-type-{{ .Type }}">{{ .Type }}</div>
+                        <a href="{{ .Path }}">{{ .Name }}</a>
+                    </div>
+                {{ end }}
+
+            {{ end }}
+        </div>
+    </div>
     {{ template "footer" . }}
 </body>
 </html>

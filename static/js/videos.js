@@ -1,9 +1,14 @@
 function changeVideo(videoPath) {
-    document.querySelector("#player").src = videoPath
+    videoInfo = JSON.parse(videoPath)
+    document.querySelector("#player").src = videoInfo.path
+    document.querySelector("#player").querySelector("#track").src = videoInfo.subtitlePath
 }
 
 function init() {
-    document.querySelector("#player").src = document.querySelector("#movie-selector").value
+    videoInfo = JSON.parse(document.querySelector("#movie-selector").value)
+
+    document.querySelector("#player").src = videoInfo.path
+    document.querySelector("#player").querySelector("#track").src = videoInfo.subtitlePath
 }
 
 init()

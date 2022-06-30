@@ -1,4 +1,4 @@
-const HOST = "http://192.168.1.99:8080/"
+const HOST = "http://192.168.2.100:8080/" //todo: don't hardcode
 const TASK_URL = "tasks/"
 
 const PRIORITY_IDEA = 0

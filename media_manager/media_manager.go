@@ -30,6 +30,7 @@ var templates = template.Must(template.ParseFiles(
 
 type VideoData struct {
 	Path string
+	SubtitlePath string
 	Name string
 }
 
@@ -38,24 +39,27 @@ type ImageData struct {
 	Paths []string
 }
 
-func getMp4PathAndNames(path string) (result []VideoData) {
-	paths := getFileList(path + "/video")
+func getVideoPathAndNames(folderPath string) (result []VideoData) {
+	fmt.Println("path: ", folderPath)
+	paths := getFileList(folderPath + "/video")
 	sort.Strings(paths)
 
 	for _, path := range paths {
-		result = append(result, VideoData { path, getFileNameFromPath(path) })
+		name := getFileNameFromPath(path)
+		// todo: don't hardcode
+		subTitlePath := "/static/res/" + folderPath + "/sub/" + name + ".vtt"
+		result = append(result, VideoData { path, subTitlePath, name })
 	}
 	return
 }
 
-func getJpgNames(path string) []string {
+func getImageNames(path string) []string {
 	return getFileList(path)
 }
 
 func Init() {
 	encoded_config, _ := os.ReadFile(DATA_PATH + "config.json")
 	json.Unmarshal(encoded_config, &configs)
-	// fmt.Println(getMp4Names(configs[3].Path))
 }
 
 /**
@@ -71,19 +75,18 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(mediaName) == 0 {
-		templates.ExecuteTemplate(w, "media.html", 0)
+		templates.ExecuteTemplate(w, "media.html", configs)
 	} else {
 		mediaType, path, err := lookup(mediaName)
 		if err != nil {
 			http.NotFound(w, r)
 		} else {
-			fmt.Println(mediaName)
 			switch mediaType {
-				case "jpg":
-					imageData := ImageData {path, getJpgNames(path)}
+				case "image":
+					imageData := ImageData {path, getImageNames(path)}
 					templates.ExecuteTemplate(w, "images.html", imageData)
-				case "mp4":
-					videos := getMp4PathAndNames(path)
+				case "video":
+					videos := getVideoPathAndNames(path)
 					templates.ExecuteTemplate(w, "videos.html", videos)
 				default:
 					panic("invalid media type")

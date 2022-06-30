@@ -13,11 +13,12 @@
         <div id="main-content">
             <select id="movie-selector" onchange="changeVideo(this.value)">
                 {{ range . }}
-                    <option value="{{ .Path }}">{{ .Name }}</option>
+                <option value='{ "path":"{{ .Path }}", "subtitlePath":"{{ .SubtitlePath }}" }'>{{ .Name }}</option>
                 {{ end }}
             </select>
             <video id="player" controls>
                 <source src="" type="video/mp4 ">
+                <track id="track" label="English" kind="subtitles" srclang="en" src="" default>
             </video>
         </div>
     </div>
@@ -27,12 +28,3 @@
     <script src="/static/js/videos.js"></script>
 </body>
 </html>
-
-
-<!-- <h3>Friends</h3>
-<select class="selector" id="friends_selector" onchange="change_friend(this.value)"></select>
-<br><br>
-<video class="player" id="friends_player" controls>
-    <source src="/static/res/friends/videos/s01e01.mp4" type="video/mp4 ">
-    <track label="English" kind="subtitles" srclang="en" src="/static/res/friends/sub/s01e01.vtt" default>
-</video> -->
