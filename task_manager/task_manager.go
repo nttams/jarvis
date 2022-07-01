@@ -10,9 +10,17 @@ import (
 )
 
 var dh DataHandlerUnique
+var templates *template.Template
 
 func Init() {
 	dh = DataHandlerUnique{}
+	templates = template.Must(template.ParseFiles("tmpl/tasks.html", "tmpl/templates.html"))
+}
+
+// used to parse client side data
+type JsonRequest struct {
+	Command string
+	Task Task
 }
 
 func HandleRequest(w http.ResponseWriter, r *http.Request) {
@@ -22,11 +30,7 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 		if len(taskGroup) == 0 {
 			http.Redirect(w, r, "/tasks/all", http.StatusFound)
 		} else {
-			// todo: ineffective, read once please
-			// currently, I don't do that because of testcase
-			// it fails if it cannot find the html file
-			templates := template.Must(template.ParseFiles("tmpl/tasks.html", "tmpl/templates.html"))
-			templates.ExecuteTemplate(w, "tasks.html", getAllTasksForTmpl(taskGroup))
+			templates.ExecuteTemplate(w, "tasks.html", getTasksWrapper(taskGroup))
 		}
 	} else if r.Method == "POST" {
 
@@ -48,16 +52,17 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getAllTasksForTmpl(project string) (result TasksForTmpl) {
+func getTasksWrapper(project string) (result TasksWrapper) {
 	tasks := dh.readAllTasks()
-	if project != "all" {
-		filteredTasks := filterProjectFromTasks(tasks, project)
-		result = convertTasksToTasksForTmpl(filteredTasks)
+	if project == "all" {
+		result = wrapTasks(tasks)
 	} else {
-		result = convertTasksToTasksForTmpl(tasks)
+		filteredTasks := filterProjectFromTasks(tasks, project)
+		result = wrapTasks(filteredTasks)
 	}
 
 	result.ProjectInfos = collectProjectInfos(tasks)
+	sort.Sort(sort.Reverse(ByCount(result.ProjectInfos)))
 
 	return
 }
@@ -72,123 +77,57 @@ func filterProjectFromTasks(tasks []Task, project string) []Task {
 	return result
 }
 
-func convertTasksToTasksForTmpl(tasks []Task) (result TasksForTmpl) {
-	idea, todo, doing, done := divideTasksIntoGroups(tasks)
+func collectProjectInfos(tasks []Task) []ProjectInfo {
+	projectInfos := []ProjectInfo{}
 
-	sort.Sort(sort.Reverse(ByPriority(idea)))
-	sort.Sort(sort.Reverse(ByPriority(todo)))
-	sort.Sort(sort.Reverse(ByPriority(doing)))
-	sort.Sort(sort.Reverse(ByLastUpdate(done)))
-
-	for _, task := range idea {
-		result.Idea = append(result.Idea, convertTaskToTaskForTmpl(&task))
-	}
-
-	for _, task := range todo {
-		result.Todo = append(result.Todo, convertTaskToTaskForTmpl(&task))
-	}
-
-	for _, task := range doing {
-		result.Doing = append(result.Doing, convertTaskToTaskForTmpl(&task))
-	}
-
-	for _, task := range done {
-		result.Done = append(result.Done, convertTaskToTaskForTmpl(&task))
-	}
-
-	result.NumberIdea = len(idea)
-	result.NumberTodo = len(todo)
-	result.NumberDoing = len(doing)
-	result.NumberDone = len(done)
-	result.NumberDoneFiltered = len(done)
-
-	return
-}
-
-func getDistinctProjects(tasks []Task) (result []string) {
 	for _, task := range tasks {
-		if !isIn(result, task.Project) {
-			result = append(result, task.Project)
+		found := false
+		for i, projectInfo := range projectInfos {
+			if task.Project == projectInfo.Name {
+				projectInfos[i].Count++
+				found = true
+				break
+			}
+		}
+		if !found {
+			projectInfos = append(projectInfos, ProjectInfo {task.Project, 1})
 		}
 	}
-	return
+	allProject := []ProjectInfo { ProjectInfo{"all", len(tasks)} }
+	return append(allProject, projectInfos...)
 }
 
-func countProject(tasks []Task, project string) int {
-	result := 0;
-	for _, task := range tasks {
-		if (task.Project == project) {
-			result++
-		}
-	}
-	return result
-}
-
-// todo: ugly
-func collectProjectInfos(tasks []Task) (result []ProjectInfo) {
-	distinctProjects := getDistinctProjects(tasks)
-
-	result = append(result, ProjectInfo {"all", 0})
-
-	for _, project := range distinctProjects {
-		result = append(result, ProjectInfo {project, 0})
-	}
-
-	for i, _ := range result {
-		result[i].Count = countProject(tasks, result[i].Project)
-	}
-
-	// todo: test if this copies or points. i'm lazy now
-	// for _, projectInfo := range result {
-
-	result[0].Count = len(tasks)
-
-	sort.Sort(sort.Reverse(ByCount(result)))
+func wrapTask(task *Task) (result TaskWrapper) {
+	result.Task = *task
+	result.CreatedTime = convertTimeToString(&task.CreatedTime)
+	result.LastUpdateTime = convertTimeToString(&task.LastUpdateTime)
+	result.LivedTime = generatePrettyAgeForTag(task.CreatedTime)
+	result.IsRecent = isRecent(task.LastUpdateTime)
 
 	return
 }
 
-
-func isIn(slice []string, value string) bool {
-	for _, item := range slice {
-		if item == value {
-			return true;
-		}
-	}
-	return false;
-}
-
-func divideTasksIntoGroups(tasks []Task) (idea []Task, todo []Task, doing []Task, done[]Task){
+// todo: you can improve this, don't loop so many times
+func wrapTasks(tasks []Task) (result TasksWrapper) {
 	for _, task := range tasks {
 		switch task.State {
 			case Idea:
-				idea = append(idea, task)
+				result.Idea = append(result.Idea, wrapTask(&task))
 			case Todo:
-				todo = append(todo, task)
+				result.Todo = append(result.Todo, wrapTask(&task))
 			case Doing:
-				doing = append(doing, task)
+				result.Doing = append(result.Doing, wrapTask(&task))
 			case Done:
-				done = append(done, task)
+				result.Done = append(result.Done, wrapTask(&task))
 			default:
 				panic("invalid state")
 		}
 	}
-	return
-}
 
-func convertTaskToTaskForTmpl(task *Task) (result TaskForTmpl) {
-	result.Id = task.Id
-	result.Project = task.Project
-	result.Title = task.Title
-	result.Content = task.Content
-	result.State = task.State
-	result.Priority = task.Priority
-	result.CreatedTime = convertTimeToString(&task.CreatedTime)
-	result.LastUpdateTime = convertTimeToString(&task.LastUpdateTime)
-	result.LivedTime = generatePrettyAgeForTag(task.CreatedTime)
-
-	result.IsRecent = isRecent(task.LastUpdateTime)
-
+	sort.Sort(sort.Reverse(ByPriority(result.Idea)))
+	sort.Sort(sort.Reverse(ByPriority(result.Todo)))
+	sort.Sort(sort.Reverse(ByPriority(result.Doing)))
+	sort.Sort(sort.Reverse(ByLastUpdate(result.Done)))
 	return
 }
 
@@ -238,7 +177,6 @@ func convertTimeToString(t *time.Time) string {
 	year, month, date := t.Date()
 	hour, min, _ := t.Clock()
 
-	// minute should have 2 digits, it's prettier
 	min_str := strconv.Itoa(min)
 	if len(min_str) == 1 {
 		min_str = "0" + min_str

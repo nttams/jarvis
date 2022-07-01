@@ -32,44 +32,32 @@
         </div>
         <select id="project-filter" title="?" onchange="changeProject(this.value)">
             {{ range .ProjectInfos }}
-                <option value="{{ .Project }}"> {{ .Project }} ({{ .Count }}) </option>
+                <option value="{{ .Name }}"> {{ .Name }} ({{ .Count }}) </option>
             {{ end }}
         </select>
     </div>
     <div id="main-container">
         <div id="tasks">
-            <div class="task-column" id="state-0" ondrop="dropOnStateColumn(event)"
-                                                 ondragover="allowDrop(event)"
-                                                 ondragenter="dragEnterColumn(event)"
-                                                 ondragleave="dragLeaveColumn(event)">
-                <span class="title-column">idea ({{ .NumberIdea }})</span>
+            <div class="task-column" id="state-0">
+                <span class="title-column" onclick="toggleColumn(STATE_IDEA)">idea {{ len .Idea }} </span>
                 {{ range .Idea }}
                     {{ template "task" . }}
                 {{ end }}
             </div>
-            <div class="task-column" id="state-1" ondrop="dropOnStateColumn(event)"
-                                                 ondragover="allowDrop(event)"
-                                                 ondragenter="dragEnterColumn(event)"
-                                                 ondragleave="dragLeaveColumn(event)">
-                <span class="title-column">todo ({{ .NumberTodo }})</span>
+            <div class="task-column" id="state-1">
+                <span class="title-column" onclick="toggleColumn(STATE_TODO)">todo {{ len .Todo }} </span>
                 {{ range .Todo }}
                     {{ template "task" . }}
                 {{ end }}
             </div>
-            <div class="task-column" id="state-2" ondrop="dropOnStateColumn(event)"
-                                                 ondragover="allowDrop(event)"
-                                                 ondragenter="dragEnterColumn(event)"
-                                                 ondragleave="dragLeaveColumn(event)">
-                <span class="title-column">doing ({{ .NumberDoing }})</span>
+            <div class="task-column" id="state-2">
+                <span class="title-column" onclick="toggleColumn(STATE_DOING)">doing {{ len .Doing }} </span>
                 {{ range .Doing }}
                     {{ template "task" . }}
                 {{ end }}
             </div>
-            <div class="task-column" id="state-3" ondrop="dropOnStateColumn(event)"
-                                                 ondragover="allowDrop(event)"
-                                                 ondragenter="dragEnterColumn(event)"
-                                                 ondragleave="dragLeaveColumn(event)">
-                <span class="title-column">done ({{ .NumberDoneFiltered }}/{{ .NumberDone }})</span>
+            <div class="task-column" id="state-3">
+                <span class="title-column" onclick="toggleColumn(STATE_DONE)">done {{ len .Done }} </span>
                 {{ range .Done }}
                     {{ template "task" . }}
                 {{ end }}
@@ -112,12 +100,12 @@
 {{ define "tasks_importer" }}
     {{ range . }}
         tasks.push({ 
-            id: {{ .Id }},
-            project: {{ .Project }},
-            title: {{ .Title }},
-            content: {{ .Content }},
-            state: {{ .State }},
-            priority: {{ .Priority }},
+            id: {{ .Task.Id }},
+            project: {{ .Task.Project }},
+            title: {{ .Task.Title }},
+            content: {{ .Task.Content }},
+            state: {{ .Task.State }},
+            priority: {{ .Task.Priority }},
             createdTime: {{ .CreatedTime }},
             lastUpdateTime: {{ .LastUpdateTime }},
             livedTime: {{ .LivedTime }},
@@ -127,33 +115,33 @@
 {{ end }}
 
 {{ define "task" }}
-<div class="task">
+<div class="task" id="task-{{ .Task.Id }}">
     <div class="task-header">
-        <span class="task-title" onclick="openEditPopup({{ .Id }})">
-            {{ .Title }}
+        <span class="task-title" onclick="openEditPopup({{ .Task.Id }})">
+            {{ .Task.Title }}
         </span>
-        <span class="task-anchor" draggable="true" ondragstart="drag(event, {{ .Id }})">
+        <span class="task-anchor" draggable="true" ondragstart="drag(event, {{ .Task.Id }})">
             ⋮
         </span>
     </div>
-    <p class="task-content">{{ .Content }}</p>
+    <p class="task-content">{{ .Task.Content }}</p>
     <div>
-        <span class="task-project" onclick="openEditPopup({{ .Id }})">
-            {{ .Project }}
+        <span class="task-project" onclick="openEditPopup({{ .Task.Id }})">
+            {{ .Task.Project }}
         </span>
-        <span class="task-id" onclick="openEditPopup({{ .Id }})">
-            T-{{ .Id }}
+        <span class="task-id" onclick="openEditPopup({{ .Task.Id }})">
+            T-{{ .Task.Id }}
         </span>
         <span class="tooltip">
-            <span class="live-time" onclick="openEditPopup({{ .Id }})">
+            <span class="live-time">
                 {{ .LivedTime }}
             </span>
             <span class="tooltip-text">
                 last update: {{ .LastUpdateTime }} <br> created on: {{ .CreatedTime }}
             </span>
         </span>
-        <span class="priority" onclick="openEditPopup({{ .Id }})">
-            {{ .Priority }}
+        <span class="priority" onclick="openEditPopup({{ .Task.Id }})">
+            {{ .Task.Priority }}
         </span>
         {{ if .IsRecent }} <span class="recent">recent</span> {{ end }}
     </div>

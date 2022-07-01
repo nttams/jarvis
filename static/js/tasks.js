@@ -255,13 +255,60 @@ function getLastElementInUrl() {
 
 function getTaskById(id) {
     for (let i = 0; i < tasks.length; ++i) {
-        if (id == tasks[i].id) return tasks[i]
+        if (tasks[i].id == id) return tasks[i]
+    }
+}
+
+columns_state = [false, false, true, false]
+
+function initColumns() {
+    for (let i = 0; i < columns_state.length; ++i)
+        showColumn(i, columns_state[i])
+}
+
+function toggleColumn(state) {
+    columns_state[state] = !columns_state[state]
+    showColumn(state, columns_state[state])
+}
+
+function showColumn(state, isShow) {
+    for (let i = 0; i < tasks.length; ++i) {
+        if (tasks[i].state == state) {
+            task = document.querySelector("#task-" + tasks[i].id)
+            if (isShow) showTask(task)
+            else hideTask(task)
+        }
+    }
+}
+
+function showTask(task) {
+    if (task.classList.contains("task-hidden")) {
+        task.classList.remove("task-hidden");
+    }
+}
+
+function hideTask(task) {
+    if (!task.classList.contains("task-hidden")) {
+        task.classList.add("task-hidden");
+    }
+}
+
+function initDragAndDrop() {
+    for (let i = 0; i < columns_state.length; ++i) {
+        column = document.querySelector("#state-" + i)
+
+        column.addEventListener("drop", dropOnStateColumn)
+        column.addEventListener("dragover", allowDrop)
+        column.addEventListener("dragenter", dragEnterColumn)
+        column.addEventListener("dragleave", dragLeaveColumn)
     }
 }
 
 function init() {
     initHotKeys()
     initPriority()
+    initColumns()
+    initDragAndDrop()
     hidePopup()
 
     // move tasks header to navigator
