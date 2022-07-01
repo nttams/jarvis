@@ -87,9 +87,11 @@ func (a ByCount) Swap(i, j int) { a[i], a[j] = a[j], a[i] } //todo: learn this s
 func (a ByCount) Less(i, j int) bool { 	return a[i].Count < a[j].Count }
 
 type TasksForTmpl struct {
+	Idea []TaskForTmpl
 	Todo []TaskForTmpl
 	Doing []TaskForTmpl
 	Done []TaskForTmpl
+	NumberIdea int
 	NumberTodo int
 	NumberDoing int
 	NumberDone int
@@ -99,15 +101,15 @@ type TasksForTmpl struct {
 
 type State int
 const (
-	Todo State = iota
+	Idea State = iota
+	Todo
 	Doing
 	Done
 )
 
 type Priority int
 const (
-	Idea Priority = iota
-	Low
+	Low Priority = iota
 	Med
 	High
 )

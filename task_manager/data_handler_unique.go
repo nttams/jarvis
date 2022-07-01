@@ -11,7 +11,7 @@ import (
 	"encoding/json"
 )
 
-const PATH = "./data/task_manager_data/all.json"
+const PATH = "./data/task_manager_data/tasks.json"
 
 type DataHandlerUnique struct {
 
@@ -30,7 +30,7 @@ func (dh DataHandlerUnique) getAFreeId() int {
 
 func (dh *DataHandlerUnique) createTask(project string, title string, content string, priority Priority) {
 	id := dh.getAFreeId()
-	task := Task { id, project, title, content, Todo, Priority(priority), time.Now(), time.Now() }
+	task := Task { id, project, title, content, Idea, Priority(priority), time.Now(), time.Now() }
 
 	tasks := dh.readAllTasks()
 	tasks = append(tasks, task)

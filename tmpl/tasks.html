@@ -6,6 +6,7 @@
     <link rel="stylesheet/less" type="text/css" href="/static/less/tasks.less" />
     <script>
         let tasks = [];
+        {{ template "tasks_importer" .Idea }}
         {{ template "tasks_importer" .Todo }}
         {{ template "tasks_importer" .Doing }}
         {{ template "tasks_importer" .Done }}
@@ -37,7 +38,16 @@
     </div>
     <div id="main-container">
         <div id="tasks">
-            <div class="task-column state-0" ondrop="dropOnStateColumn(event)"
+            <div class="task-column" id="state-0" ondrop="dropOnStateColumn(event)"
+                                                 ondragover="allowDrop(event)"
+                                                 ondragenter="dragEnterColumn(event)"
+                                                 ondragleave="dragLeaveColumn(event)">
+                <span class="title-column">idea ({{ .NumberIdea }})</span>
+                {{ range .Idea }}
+                    {{ template "task" . }}
+                {{ end }}
+            </div>
+            <div class="task-column" id="state-1" ondrop="dropOnStateColumn(event)"
                                                  ondragover="allowDrop(event)"
                                                  ondragenter="dragEnterColumn(event)"
                                                  ondragleave="dragLeaveColumn(event)">
@@ -46,8 +56,7 @@
                     {{ template "task" . }}
                 {{ end }}
             </div>
-
-            <div class="task-column state-1" ondrop="dropOnStateColumn(event)"
+            <div class="task-column" id="state-2" ondrop="dropOnStateColumn(event)"
                                                  ondragover="allowDrop(event)"
                                                  ondragenter="dragEnterColumn(event)"
                                                  ondragleave="dragLeaveColumn(event)">
@@ -56,8 +65,7 @@
                     {{ template "task" . }}
                 {{ end }}
             </div>
-
-            <div class="task-column state-2" ondrop="dropOnStateColumn(event)"
+            <div class="task-column" id="state-3" ondrop="dropOnStateColumn(event)"
                                                  ondragover="allowDrop(event)"
                                                  ondragenter="dragEnterColumn(event)"
                                                  ondragleave="dragLeaveColumn(event)">
@@ -88,7 +96,6 @@
                 <input type="hidden" id="task-priority">
 
             <div class="popup-item" id="tags-wrapper">
-                <span id="popup-priority-idea" class="priority-none" onclick="selectPriorty(PRIORITY_IDEA)">idea</span>
                 <span id="popup-priority-low" class="priority-none" onclick="selectPriorty(PRIORITY_LOW)">low</span>
                 <span id="popup-priority-med" class="priority-none" onclick="selectPriorty(PRIORITY_MED)">med</span>
                 <span id="popup-priority-high" class="priority-none" onclick="selectPriorty(PRIORITY_HIGH)">high</span>
@@ -131,7 +138,6 @@
     </div>
     <p class="task-content">{{ .Content }}</p>
     <div>
-        {{ if .IsRecent }} <span class="recent">recent</span> {{ end }}
         <span class="task-project" onclick="openEditPopup({{ .Id }})">
             {{ .Project }}
         </span>
@@ -149,6 +155,7 @@
         <span class="priority" onclick="openEditPopup({{ .Id }})">
             {{ .Priority }}
         </span>
+        {{ if .IsRecent }} <span class="recent">recent</span> {{ end }}
     </div>
 </div>
 {{ end }}

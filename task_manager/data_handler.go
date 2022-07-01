@@ -37,7 +37,7 @@ func (dh *DataHandler) createTask(project string, title string, content string, 
 	id := getAFreeId()
 
 	now := time.Now()
-	task := Task { id, project, title, content, Todo, Priority(priority), now, now }
+	task := Task { id, project, title, content, Idea, Priority(priority), now, now }
 	writeTask(&task)
 }
 

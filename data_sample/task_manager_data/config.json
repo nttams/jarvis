@@ -1,5 +1,5 @@
 {
-    "ShowIdea":0,
+    "ShowIdea":true,
     "RecentMaxTimeSec":10,
     "MaxDoneTask":10
 }

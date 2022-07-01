@@ -1,15 +1,15 @@
 const HOST = window.location.protocol + "//" + window.location.host + "/"
 const TASK_URL = "tasks/"
 
-const PRIORITY_IDEA = 0
-const PRIORITY_LOW = 1
-const PRIORITY_MED = 2
-const PRIORITY_HIGH = 3
+const PRIORITY_LOW = 0
+const PRIORITY_MED = 1
+const PRIORITY_HIGH = 2
 const PRIORITY_DEFAULT = PRIORITY_LOW
 
-const STATE_TODO = 0
-const STATE_DOING = 1
-const STATE_DONE = 2
+const STATE_IDEA = 0
+const STATE_TODO = 1
+const STATE_DOING = 2
+const STATE_DONE = 3
 
 const OVERLAY = document.querySelector("#overlay");
 const POPUP = document.querySelector("#popup");
@@ -35,8 +35,8 @@ function hidePopup() {
 }
 
 function initPriority() {
-    const names = ["idea", "low", "med", "high"]
-    const classes = ["priority-idea", "priority-low", "priority-med", "priority-high"]
+    const names = ["low", "med", "high"]
+    const classes = ["priority-low", "priority-med", "priority-high"]
 
     const priorities = document.querySelectorAll(".priority");
 
@@ -70,8 +70,6 @@ function openCreatePopup() {
     POPUP.querySelector("#task-project").value = ""
     POPUP.querySelector("#task-title").value = ""
     POPUP.querySelector("#task-content").value = ""
-
-    // priority_low should be used as default, idea is only for very opaque thought
     POPUP.querySelector("#task-id-label").innerHTML = "creating new task"
 }
 
@@ -154,7 +152,6 @@ function query(data) {
 
 // todo: ugly, improve this
 function selectPriorty(value) {
-    document.querySelector("#popup-priority-idea").className = "priority-none"
     document.querySelector("#popup-priority-low").className = "priority-none"
     document.querySelector("#popup-priority-med").className = "priority-none"
     document.querySelector("#popup-priority-high").className = "priority-none"
@@ -162,9 +159,6 @@ function selectPriorty(value) {
     document.querySelector("#task-priority").value = value
 
     switch (value) {
-        case PRIORITY_IDEA:
-            document.querySelector("#popup-priority-idea").className = "priority-idea"
-            break;
         case PRIORITY_LOW:
             document.querySelector("#popup-priority-low").className = "priority-low"
             break;
@@ -201,7 +195,7 @@ function dropOnStateColumn(e) {
         return
 
     let old_state = parseInt(e.dataTransfer.getData("state"))
-    let state = getStateFromClassList(e.target.classList)
+    let state = getStateFromId(e.target.id)
 
     if (state != old_state) {
         let id = parseInt(e.dataTransfer.getData("id"))
@@ -214,16 +208,17 @@ function dragEnterColumn(e) {
     if (!e.target.classList.contains("task-column"))
         return
 
-    let state = getStateFromClassList(e.target.classList)
+    let state = getStateFromId(e.target.id)
 
     if (state != current_state)
         e.target.classList.add('task-column-drag-over');
 }
 
-function getStateFromClassList(classList) {
-    if (classList.contains("state-0")) return STATE_TODO
-    if (classList.contains("state-1")) return STATE_DOING
-    if (classList.contains("state-2")) return STATE_DONE
+function getStateFromId(id) {
+    if (id == "state-0") return STATE_IDEA
+    if (id == "state-1") return STATE_TODO
+    if (id == "state-2") return STATE_DOING
+    if (id == "state-3") return STATE_DONE
 }
 
 function dragLeaveColumn(e) {

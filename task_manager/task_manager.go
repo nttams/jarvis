@@ -73,11 +73,16 @@ func filterProjectFromTasks(tasks []Task, project string) []Task {
 }
 
 func convertTasksToTasksForTmpl(tasks []Task) (result TasksForTmpl) {
-	todo, doing, done := divideTasksIntoGroups(tasks)
+	idea, todo, doing, done := divideTasksIntoGroups(tasks)
 
+	sort.Sort(sort.Reverse(ByPriority(idea)))
 	sort.Sort(sort.Reverse(ByPriority(todo)))
 	sort.Sort(sort.Reverse(ByPriority(doing)))
 	sort.Sort(sort.Reverse(ByLastUpdate(done)))
+
+	for _, task := range idea {
+		result.Idea = append(result.Idea, convertTaskToTaskForTmpl(&task))
+	}
 
 	for _, task := range todo {
 		result.Todo = append(result.Todo, convertTaskToTaskForTmpl(&task))
@@ -91,6 +96,7 @@ func convertTasksToTasksForTmpl(tasks []Task) (result TasksForTmpl) {
 		result.Done = append(result.Done, convertTaskToTaskForTmpl(&task))
 	}
 
+	result.NumberIdea = len(idea)
 	result.NumberTodo = len(todo)
 	result.NumberDoing = len(doing)
 	result.NumberDone = len(done)
@@ -152,9 +158,11 @@ func isIn(slice []string, value string) bool {
 	return false;
 }
 
-func divideTasksIntoGroups(tasks []Task) (todo []Task, doing []Task, done[]Task){
+func divideTasksIntoGroups(tasks []Task) (idea []Task, todo []Task, doing []Task, done[]Task){
 	for _, task := range tasks {
 		switch task.State {
+			case Idea:
+				idea = append(idea, task)
 			case Todo:
 				todo = append(todo, task)
 			case Doing:
