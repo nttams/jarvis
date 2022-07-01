@@ -4,6 +4,8 @@ import (
 	"os"
 	"fmt"
 	"sort"
+	"time"
+	"math/rand"
 	"errors"
 	"strings"
 	"net/http"
@@ -29,6 +31,11 @@ var templates = template.Must(template.ParseFiles(
 ))
 
 type VideoData struct {
+	Title string
+	Paths []VideoPath
+}
+
+type VideoPath struct {
 	Path string
 	SubtitlePath string
 	Name string
@@ -39,7 +46,7 @@ type ImageData struct {
 	Paths []string
 }
 
-func getVideoPathAndNames(folderPath string) (result []VideoData) {
+func getVideoPaths(folderPath string) (result []VideoPath) {
 	fmt.Println("path: ", folderPath)
 	paths := getFileList(folderPath + "/video")
 	sort.Strings(paths)
@@ -48,18 +55,19 @@ func getVideoPathAndNames(folderPath string) (result []VideoData) {
 		name := getFileNameFromPath(path)
 		// todo: don't hardcode
 		subTitlePath := "/static/res/" + folderPath + "/sub/" + name + ".vtt"
-		result = append(result, VideoData { path, subTitlePath, name })
+		result = append(result, VideoPath { path, subTitlePath, name })
 	}
 	return
 }
 
-func getImageNames(path string) []string {
+func getImagePaths(path string) []string {
 	return getFileList(path)
 }
 
 func Init() {
 	encoded_config, _ := os.ReadFile(DATA_PATH + "config.json")
 	json.Unmarshal(encoded_config, &configs)
+	rand.Seed(time.Now().UnixNano())
 }
 
 /**
@@ -83,11 +91,15 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 		} else {
 			switch mediaType {
 				case "image":
-					imageData := ImageData {path, getImageNames(path)}
+					paths := getImagePaths(path)
+
+					rand.Shuffle(len(paths), func(i, j int) { paths[i], paths[j] = paths[j], paths[i] } )
+
+					imageData := ImageData {path, paths}
 					templates.ExecuteTemplate(w, "images.html", imageData)
 				case "video":
-					videos := getVideoPathAndNames(path)
-					templates.ExecuteTemplate(w, "videos.html", videos)
+					videoData := VideoData {path, getVideoPaths(path)}
+					templates.ExecuteTemplate(w, "videos.html", videoData)
 				default:
 					panic("invalid media type")
 			}

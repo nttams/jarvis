@@ -85,6 +85,11 @@
     background-color: @priority-high;
 }
 
+.priority-none {
+    .tag();
+    background-color: @priority-none;
+}
+
 .recent {
     .tag();
     background-color: @task-recent;
@@ -292,12 +297,6 @@
         padding: 5px;
         align-items: center;
         margin-bottom: 0px;
-
-        .priority-none {
-            .tag();
-            margin: 0px 2px;
-            background-color: @priority-none;
-        }
 
         #popup-create-task {
             margin-left: auto;

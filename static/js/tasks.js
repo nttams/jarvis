@@ -1,4 +1,4 @@
-const HOST = "http://192.168.2.100:8080/" //todo: don't hardcode
+const HOST = window.location.protocol + "//" + window.location.host + "/"
 const TASK_URL = "tasks/"
 
 const PRIORITY_IDEA = 0
@@ -49,14 +49,15 @@ function initPriority() {
     }
 }
 
-function openEditPopup(id, project, title, content, priority) {
+function openEditPopup(id) {
     showPopup()
-    selectPriorty(priority)
+    task = getTaskById(id)
 
+    selectPriorty(task.priority)
     POPUP.querySelector("#task-id").value = id
-    POPUP.querySelector("#task-project").value = project
-    POPUP.querySelector("#task-title").value =  title
-    POPUP.querySelector("#task-content").value =  content
+    POPUP.querySelector("#task-project").value = task.project
+    POPUP.querySelector("#task-title").value =  task.title
+    POPUP.querySelector("#task-content").value =  task.content
 
     POPUP.querySelector("#task-id-label").innerHTML = "editing task-" + id
 }
@@ -174,7 +175,7 @@ function selectPriorty(value) {
             document.querySelector("#popup-priority-high").className = "priority-high"
             break;
         default:
-            console.error("not recognized priorty")
+            console.error("not recognized priority ", value)
     }
 }
 
@@ -182,12 +183,13 @@ function selectPriorty(value) {
 // todo: NOT a good solution, find something else
 var current_state = -1
 
-function drag(e, id, state, project, title) {
+function drag(e, id) {
+    task = getTaskById(id)
     e.dataTransfer.setData("id", id)
-    e.dataTransfer.setData("project", project)
-    e.dataTransfer.setData("title", title)
-    e.dataTransfer.setData("state", state)
-    current_state = state
+    e.dataTransfer.setData("project", task.project)
+    e.dataTransfer.setData("title", task.title)
+    e.dataTransfer.setData("state", task.state)
+    current_state = task.state
 }
 
 function allowDrop(e) {
@@ -219,9 +221,9 @@ function dragEnterColumn(e) {
 }
 
 function getStateFromClassList(classList) {
-    if (classList.contains("dnd-state-0")) return STATE_TODO
-    if (classList.contains("dnd-state-1")) return STATE_DOING
-    if (classList.contains("dnd-state-2")) return STATE_DONE
+    if (classList.contains("state-0")) return STATE_TODO
+    if (classList.contains("state-1")) return STATE_DOING
+    if (classList.contains("state-2")) return STATE_DONE
 }
 
 function dragLeaveColumn(e) {
@@ -254,6 +256,12 @@ function changeProject(project) {
 function getLastElementInUrl() {
     url_parts = window.location.href.split("/")
     return url_parts[url_parts.length - 1]
+}
+
+function getTaskById(id) {
+    for (let i = 0; i < tasks.length; ++i) {
+        if (id == tasks[i].id) return tasks[i]
+    }
 }
 
 function init() {

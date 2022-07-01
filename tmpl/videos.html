@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>videos</title>
+    <title> jarvis - {{ .Title }} </title>
     {{ template "importer" . }}
     <link rel="stylesheet/less" type="text/css" href="/static/less/videos.less" />
 </head>
@@ -12,7 +12,7 @@
     <div id="main-container">
         <div id="main-content">
             <select id="movie-selector" onchange="changeVideo(this.value)">
-                {{ range . }}
+                {{ range .Paths }}
                 <option value='{ "path":"{{ .Path }}", "subtitlePath":"{{ .SubtitlePath }}" }'>{{ .Name }}</option>
                 {{ end }}
             </select>

@@ -1,9 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>tasks</title>
+    <title> jarvis - tasks </title>
     {{ template "importer" . }}
     <link rel="stylesheet/less" type="text/css" href="/static/less/tasks.less" />
+    <script>
+        let tasks = [];
+        {{ template "tasks_importer" .Todo }}
+        {{ template "tasks_importer" .Doing }}
+        {{ template "tasks_importer" .Done }}
+    </script>
 </head>
 <body>
     {{ template "header" . }}
@@ -31,7 +37,7 @@
     </div>
     <div id="main-container">
         <div id="tasks">
-            <div class="task-column dnd-state-0" ondrop="dropOnStateColumn(event)"
+            <div class="task-column state-0" ondrop="dropOnStateColumn(event)"
                                                  ondragover="allowDrop(event)"
                                                  ondragenter="dragEnterColumn(event)"
                                                  ondragleave="dragLeaveColumn(event)">
@@ -41,7 +47,7 @@
                 {{ end }}
             </div>
 
-            <div class="task-column dnd-state-1" ondrop="dropOnStateColumn(event)"
+            <div class="task-column state-1" ondrop="dropOnStateColumn(event)"
                                                  ondragover="allowDrop(event)"
                                                  ondragenter="dragEnterColumn(event)"
                                                  ondragleave="dragLeaveColumn(event)">
@@ -51,7 +57,7 @@
                 {{ end }}
             </div>
 
-            <div class="task-column dnd-state-2" ondrop="dropOnStateColumn(event)"
+            <div class="task-column state-2" ondrop="dropOnStateColumn(event)"
                                                  ondragover="allowDrop(event)"
                                                  ondragenter="dragEnterColumn(event)"
                                                  ondragleave="dragLeaveColumn(event)">
@@ -89,45 +95,58 @@
 
                 <button class="btn" id="popup-create-task" onclick="createOrUpdateTask()">submit</button>
             </div>
-
         </div>
     </div>
-
     {{ template "footer" . }}
-
     <script src="/static/js/tasks.js"></script>
 </body>
 </html>
 
+{{ define "tasks_importer" }}
+    {{ range . }}
+        tasks.push({ 
+            id: {{ .Id }},
+            project: {{ .Project }},
+            title: {{ .Title }},
+            content: {{ .Content }},
+            state: {{ .State }},
+            priority: {{ .Priority }},
+            createdTime: {{ .CreatedTime }},
+            lastUpdateTime: {{ .LastUpdateTime }},
+            livedTime: {{ .LivedTime }},
+            isRecent: {{ .IsRecent }},
+        })
+    {{ end }}
+{{ end }}
+
 {{ define "task" }}
-<!-- id="T-" for drag and drop -->
-<div class="task" id="T-{{ .Id }}">
+<div class="task">
     <div class="task-header">
-        <span class="task-title" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
+        <span class="task-title" onclick="openEditPopup({{ .Id }})">
             {{ .Title }}
         </span>
-        <span class="task-anchor" draggable="true" ondragstart="drag(event, {{ .Id }}, {{ .State }}, {{ .Project }}, {{ .Title }})">
+        <span class="task-anchor" draggable="true" ondragstart="drag(event, {{ .Id }})">
             ⋮
         </span>
     </div>
     <p class="task-content">{{ .Content }}</p>
     <div>
         {{ if .IsRecent }} <span class="recent">recent</span> {{ end }}
-        <span class="task-project" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
+        <span class="task-project" onclick="openEditPopup({{ .Id }})">
             {{ .Project }}
         </span>
-        <span class="task-id" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
+        <span class="task-id" onclick="openEditPopup({{ .Id }})">
             T-{{ .Id }}
         </span>
         <span class="tooltip">
-            <span class="live-time" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
+            <span class="live-time" onclick="openEditPopup({{ .Id }})">
                 {{ .LivedTime }}
             </span>
             <span class="tooltip-text">
                 last update: {{ .LastUpdateTime }} <br> created on: {{ .CreatedTime }}
             </span>
         </span>
-        <span class="priority state-{{ .State }}" onclick="openEditPopup( {{ .Id }}, {{ .Project }}, {{ .Title }}, {{ .Content }}, {{ .Priority }})">
+        <span class="priority" onclick="openEditPopup({{ .Id }})">
             {{ .Priority }}
         </span>
     </div>

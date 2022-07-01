@@ -6,7 +6,7 @@ function changeWidth(width) {
     }
 }
 
-const width = [20, 25, 50, 100]
+const width = [10, 20, 25, 50, 100]
 function initOptionWidth() {
     for (let i = 0; i < width.length; ++i) {
         const option = document.createElement("option");
