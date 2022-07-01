@@ -26,6 +26,7 @@ func mediaHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	tm.Init()
 	mm.Init()
 
 	http.HandleFunc("/", rootHandler)

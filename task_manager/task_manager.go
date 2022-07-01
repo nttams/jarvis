@@ -1,7 +1,6 @@
 package task_manager
 
 import (
-	"os"
 	"time"
 	"sort"
 	"strconv"
@@ -10,7 +9,11 @@ import (
 	"html/template"
 )
 
-const DATA_PATH = "./static/task_manager_data/data/"
+var dh DataHandlerUnique
+
+func Init() {
+	dh = DataHandlerUnique{}
+}
 
 func HandleRequest(w http.ResponseWriter, r *http.Request) {
 	taskGroup := r.URL.Path[len("/tasks/"):]
@@ -32,129 +35,21 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 
 		switch req.Command {
 			case "create-task":
-				createTask(req.Task.Project, req.Task.Title, req.Task.Content, req.Task.Priority)
+				dh.createTask(req.Task.Project, req.Task.Title, req.Task.Content, req.Task.Priority)
 			case "update-task":
-				updateTask(req.Task.Id, req.Task.Project, req.Task.Title, req.Task.Content, req.Task.Priority)
+				dh.updateTask(req.Task.Id, req.Task.Project, req.Task.Title, req.Task.Content, req.Task.Priority)
 			case "update-task-state":
-				updateTaskState(req.Task.Id, req.Task.State)
+				dh.changeTaskState(req.Task.Id, req.Task.State)
 			case "delete-task":
-				deleteTask(req.Task.Id)
+				dh.deleteTask(req.Task.Id)
 			default:
 				panic("invalid command")
 		}
 	}
 }
 
-type Task struct {
-	Id int
-	Project string
-	Title string
-	Content string
-	State State
-	Priority Priority
-	CreatedTime time.Time
-	LastUpdateTime time.Time
-}
-
-// todo and doing states use this
-type ByPriority []Task
-func (a ByPriority) Len() int { return len(a) }
-func (a ByPriority) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
-
-// isRecent --> priority (dec) --> created time (inc) --> id (inc)
-func (a ByPriority) Less(i, j int) bool {
-	if isRecent(a[i].LastUpdateTime) && !isRecent(a[j].LastUpdateTime) { return false }
-	if !isRecent(a[i].LastUpdateTime) && isRecent(a[j].LastUpdateTime) { return true }
-
-	if a[i].Priority < a[j].Priority { return true }
-	if a[i].Priority > a[j].Priority { return false }
-
-	if a[i].CreatedTime.Before(a[j].CreatedTime) { return false }
-	if a[i].CreatedTime.After(a[j].CreatedTime) { return true }
-
-	if a[i].Id > a[j].Id { return true }
-	return false;
-}
-
-// done state uses this
-type ByLastUpdate []Task
-func (a ByLastUpdate) Len() int { return len(a) }
-func (a ByLastUpdate) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
-
-// isRecent --> last update (dec) --> priority (dec) --> created time (inc) --> id (inc)
-func (a ByLastUpdate) Less(i, j int) bool {
-	if isRecent(a[i].LastUpdateTime) && !isRecent(a[j].LastUpdateTime) { return false }
-	if !isRecent(a[i].LastUpdateTime) && isRecent(a[j].LastUpdateTime) { return true }
-
-	if a[i].LastUpdateTime.Before(a[j].LastUpdateTime) { return true }
-	if a[i].LastUpdateTime.After(a[j].LastUpdateTime) { return false }
-
-	if a[i].Priority < a[j].Priority { return true }
-	if a[i].Priority > a[j].Priority { return false }
-
-	if a[i].CreatedTime.Before(a[j].CreatedTime) { return false }
-	if a[i].CreatedTime.After(a[j].CreatedTime) { return true }
-
-	if a[i].Id > a[j].Id { return true }
-	return false;
-}
-
-type JsonRequest struct {
-	Command string
-	Task Task
-}
-
-type TaskForTmpl struct {
-	Id int
-	Project string
-	Title string
-	Content string
-	State State
-	Priority Priority
-	CreatedTime string
-	LastUpdateTime string
-	LivedTime string
-	IsRecent bool
-}
-
-type ProjectInfo struct {
-	Project string
-	Count int
-}
-
-type ByCount []ProjectInfo
-func (a ByCount) Len() int { return len(a) }
-func (a ByCount) Swap(i, j int) { a[i], a[j] = a[j], a[i] } //todo: learn this swap
-func (a ByCount) Less(i, j int) bool { 	return a[i].Count < a[j].Count }
-
-type TasksForTmpl struct {
-	Todo []TaskForTmpl
-	Doing []TaskForTmpl
-	Done []TaskForTmpl
-	NumberTodo int
-	NumberDoing int
-	NumberDone int
-	NumberDoneFiltered int
-	ProjectInfos []ProjectInfo
-}
-
-type State int
-const (
-	Todo State = iota
-	Doing
-	Done
-)
-
-type Priority int
-const (
-	Idea Priority = iota
-	Low
-	Med
-	High
-)
-
 func getAllTasksForTmpl(project string) (result TasksForTmpl) {
-	tasks := readAllTasks()
+	tasks := dh.readAllTasks()
 	if project != "all" {
 		filteredTasks := filterProjectFromTasks(tasks, project)
 		result = convertTasksToTasksForTmpl(filteredTasks)
@@ -204,7 +99,7 @@ func convertTasksToTasksForTmpl(tasks []Task) (result TasksForTmpl) {
 	return
 }
 
-func getDistinctProject(tasks []Task) (result []string) {
+func getDistinctProjects(tasks []Task) (result []string) {
 	for _, task := range tasks {
 		if !isIn(result, task.Project) {
 			result = append(result, task.Project)
@@ -225,7 +120,7 @@ func countProject(tasks []Task, project string) int {
 
 // todo: ugly
 func collectProjectInfos(tasks []Task) (result []ProjectInfo) {
-	distinctProjects := getDistinctProject(tasks)
+	distinctProjects := getDistinctProjects(tasks)
 
 	result = append(result, ProjectInfo {"all", 0})
 
@@ -346,92 +241,4 @@ func convertTimeToString(t *time.Time) string {
 		strconv.Itoa(date) + " " +
 		strconv.Itoa(hour) + ":" +
 		min_str
-}
-
-func saveTask(task *Task) error {
-	filename := getFilename(task.Id)
-
-	encoded, _ := json.Marshal(task)
-
-	// todo: learn this 0600
-	return os.WriteFile(filename, encoded, 0600)
-}
-
-func deleteTask(id int) {
-	os.Remove(getFilename(id))
-}
-
-func getAFreeId() int {
-	file, _ := os.Open(DATA_PATH)
-
-	files, _ := file.Readdir(0)
-
-	max := -1
-	for _, v := range files {
-		filename := v.Name()[:len(v.Name())-5]
-		temp, _:= strconv.Atoi(filename)
-		if temp > max {
-			max = temp
-		}
-	}
-	return max + 1;
-}
-
-func createTask(project string, title string, content string, priority Priority) {
-	id := getAFreeId()
-
-	now := time.Now()
-	task := Task {id, project, title, content, Todo, Priority(priority), now, now}
-	saveTask(&task)
-}
-
-func updateTask(id int, project string, title string, content string, priority Priority) {
-	task := readTask(id)
-
-	// changing attribute in done task does not update lastUpdateTime
-	if task.State != Done {
-		task.LastUpdateTime = time.Now();
-	}
-
-	task.Project = project;
-	task.Title = title;
-	task.Content = content;
-	task.Priority = priority;
-	saveTask(&task)
-}
-
-func updateTaskState(id int, state State) {
-	task := readTask(id)
-
-	task.State = State(state);
-	task.LastUpdateTime = time.Now();
-	saveTask(&task)
-}
-
-func readTask(id int) Task {
-	encoded, _ := os.ReadFile(getFilename(id))
-	var task Task
-	json.Unmarshal(encoded, &task)
-	return task
-}
-
-func readAllTasks() []Task {
-	file, _ := os.Open(DATA_PATH)
-
-	files, _ := file.Readdir(0)
-
-	result := []Task{}
-
-	for _, v := range files {
-		encoded, _ := os.ReadFile(DATA_PATH + v.Name())
-		var task Task
-		_ = json.Unmarshal(encoded, &task)
-		result = append(result, task)
-	}
-
-	return result
-}
-
-func getFilename(id int) string {
-	return DATA_PATH + strconv.Itoa(id) + ".json"
 }
