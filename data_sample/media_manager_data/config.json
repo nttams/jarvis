@@ -1,0 +1,5 @@
+[
+    { "Name":"cool_images", "Type":"image", "Path":"path_to_image_folder" },
+    { "Name":"cool_videos", "Type":"video", "Path":"path_to_video_folder"},
+    { "Name":"cool_youtube_link", "Type":"youtube", "Path":"https://www.youtube.com/"}
+]

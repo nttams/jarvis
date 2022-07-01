@@ -36,8 +36,11 @@ func main() {
 	http.HandleFunc("/favicon.ico", func (w http.ResponseWriter, r* http.Request) {
 		http.ServeFile(w, r, "./static/img/favicon.ico")
 	})
-	fs := http.FileServer(http.Dir("./static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	fs_static := http.FileServer(http.Dir("./static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs_static))
+
+	fs_data := http.FileServer(http.Dir("./data"))
+	http.Handle("/data/", http.StripPrefix("/data/", fs_data))
 
 	fmt.Println("listening on port 8080")
 	http.ListenAndServe(":8080", nil)

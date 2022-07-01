@@ -9,7 +9,7 @@ import (
 	"encoding/json"
 )
 
-const DATA_PATH = "./static/task_manager_data/data/"
+const DATA_PATH = "./data/task_manager_data/data/"
 
 // DataHandler should be stafeful for caching stuff
 // But not for now :D

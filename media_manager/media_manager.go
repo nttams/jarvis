@@ -2,7 +2,6 @@ package media_manager
 
 import (
 	"os"
-	"fmt"
 	"sort"
 	"time"
 	"math/rand"
@@ -13,7 +12,7 @@ import (
 	"html/template"
 )
 
-const DATA_PATH = "./static/media_manager_data/"
+const DATA_PATH = "./data/media_manager_data/"
 
 type dataConfig struct {
 	Name string
@@ -47,7 +46,6 @@ type ImageData struct {
 }
 
 func getVideoPaths(folderPath string) (result []VideoPath) {
-	fmt.Println("path: ", folderPath)
 	paths := getFileList(folderPath + "/video")
 	sort.Strings(paths)
 
@@ -123,6 +121,7 @@ func getFileNameFromPath(path string) (name string) {
 	return filename
 }
 
+// todo: improve this
 func getFileList(folder string) []string {
 	path := "./static/res/" + folder
 	file, _ := os.Open(path)

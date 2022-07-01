@@ -11,7 +11,7 @@ import (
 	"encoding/json"
 )
 
-const PATH = "./static/task_manager_data/data_unique/all.json"
+const PATH = "./data/task_manager_data/all.json"
 
 type DataHandlerUnique struct {
 
