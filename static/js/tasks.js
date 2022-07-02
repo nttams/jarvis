@@ -259,37 +259,39 @@ function getTaskById(id) {
     }
 }
 
-columns_state = [false, false, true, false]
-
+columns_state = [false, true, true, false]
 function initColumns() {
     for (let i = 0; i < columns_state.length; ++i)
-        showColumn(i, columns_state[i])
+        displayColumn(i, columns_state[i])
 }
 
 function toggleColumn(state) {
     columns_state[state] = !columns_state[state]
-    showColumn(state, columns_state[state])
+    displayColumn(state, columns_state[state])
 }
 
-function showColumn(state, isShow) {
+function displayColumn(state, isShow) {
     for (let i = 0; i < tasks.length; ++i) {
         if (tasks[i].state == state) {
             task = document.querySelector("#task-" + tasks[i].id)
-            if (isShow) showTask(task)
-            else hideTask(task)
+            if (isShow || tasks[i].isRecent)
+                showTask(task) 
+            else
+                hideTask(task)
         }
     }
 }
 
+const HIDDEN_TASK_CLASS = "task-hidden"
 function showTask(task) {
-    if (task.classList.contains("task-hidden")) {
-        task.classList.remove("task-hidden");
+    if (task.classList.contains(HIDDEN_TASK_CLASS)) {
+        task.classList.remove(HIDDEN_TASK_CLASS);
     }
 }
 
 function hideTask(task) {
-    if (!task.classList.contains("task-hidden")) {
-        task.classList.add("task-hidden");
+    if (!task.classList.contains(HIDDEN_TASK_CLASS)) {
+        task.classList.add(HIDDEN_TASK_CLASS);
     }
 }
 
