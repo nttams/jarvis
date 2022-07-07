@@ -275,7 +275,7 @@ function displayColumn(state, isShow) {
         if (tasks[i].state == state) {
             task = document.querySelector("#task-" + tasks[i].id)
             if (isShow || tasks[i].isRecent)
-                showTask(task) 
+                showTask(task)
             else
                 hideTask(task)
         }

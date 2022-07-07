@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"monitor"
 	"net/http"
 	"html/template"
 	tm "task_manager"
@@ -25,13 +26,19 @@ func mediaHandler(w http.ResponseWriter, r *http.Request) {
 	mm.HandleRequest(w, r)
 }
 
+func monitorHandler(w http.ResponseWriter, r* http.Request) {
+	monitor.HandleRequest(w, r)
+}
+
 func main() {
 	tm.Init()
 	mm.Init()
+	monitor.Init()
 
 	http.HandleFunc("/", rootHandler)
 	http.HandleFunc("/tasks/", tasksHandler)
 	http.HandleFunc("/media/", mediaHandler)
+	http.HandleFunc("/monitor/", monitorHandler)
 
 	http.HandleFunc("/favicon.ico", func (w http.ResponseWriter, r* http.Request) {
 		http.ServeFile(w, r, "./static/img/favicon.ico")

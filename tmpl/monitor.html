@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title> jarvis - monitor </title>
+
+    <link rel="stylesheet/less" type="text/css" href="/static/less/monitor.less" />
+    {{ template "importer" . }}
+
+</head>
+
+<body>
+    {{ template "header" . }}
+
+    <div id="main-container">
+        <div id="main-content">
+            <div><meter class="gauge" id="cpu0" max="100"></meter></div>
+            <div><meter class="gauge" id="cpu1" max="100"></meter></div>
+            <div><meter class="gauge" id="cpu2" max="100"></meter></div>
+            <div><meter class="gauge" id="cpu3" max="100"></meter></div>
+            <div><meter class="gauge" id="memory"></meter></div>
+            <div><meter class="gauge" id="disk"></meter></div>
+        </div>
+    </div>
+
+    {{ template "footer" . }}
+    <script src="/static/js/monitor.js"></script>
+</body>
+</html>
