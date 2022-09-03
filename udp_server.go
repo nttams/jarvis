@@ -92,13 +92,13 @@ func getCPUInfo() ([]CPUInfo, int64) {
 }
 
 func readCPUStatus() (result []int) {
-	cpu_s, start := getCPUInfo()
+	cpuS, start := getCPUInfo()
 	time.Sleep(300 * time.Millisecond)
-	cpu_e, end := getCPUInfo()
+	cpuE, end := getCPUInfo()
 
 	timeDelta := float64(end - start) //millisecond
-	for i := 1; i < len(cpu_s); i++ {
-		cpuDelta := float64((cpu_e[i].sum() - cpu_s[i].sum()) * 10) //millisecond
+	for i := 1; i < len(cpuS); i++ {
+		cpuDelta := float64((cpuE[i].sum() - cpuS[i].sum()) * 10) //millisecond
 		value := int(100 * cpuDelta / timeDelta)
 		result = append(result, value)
 	}

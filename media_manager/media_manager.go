@@ -63,8 +63,8 @@ func getImagePaths(path string) []string {
 }
 
 func Init() {
-	encoded_config, _ := os.ReadFile(DATA_PATH + "config.json")
-	json.Unmarshal(encoded_config, &configs)
+	encodedConfig, _ := os.ReadFile(DATA_PATH + "config.json")
+	json.Unmarshal(encodedConfig, &configs)
 	rand.Seed(time.Now().UnixNano())
 }
 

@@ -1,10 +1,13 @@
 package main
 
 import (
+	"os"
 	"fmt"
 	"monitor"
+	"strconv"
 	"net/http"
 	"html/template"
+	"encoding/json"
 	tm "task_manager"
 	mm "media_manager"
 )
@@ -30,7 +33,19 @@ func monitorHandler(w http.ResponseWriter, r* http.Request) {
 	monitor.HandleRequest(w, r)
 }
 
+func readServerConfig() (serverConfig ServerConfig) {
+	encodedConfig, _ := os.ReadFile("server_config.json")
+	json.Unmarshal(encodedConfig, &serverConfig)
+	return 
+}
+
+type ServerConfig struct {
+	Port int
+}
+
 func main() {
+	serverConfig := readServerConfig()
+
 	tm.Init()
 	mm.Init()
 	monitor.Init()
@@ -43,12 +58,13 @@ func main() {
 	http.HandleFunc("/favicon.ico", func (w http.ResponseWriter, r* http.Request) {
 		http.ServeFile(w, r, "./static/img/favicon.ico")
 	})
-	fs_static := http.FileServer(http.Dir("./static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs_static))
+	fsStatic := http.FileServer(http.Dir("./static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fsStatic))
 
-	fs_data := http.FileServer(http.Dir("./data"))
-	http.Handle("/data/", http.StripPrefix("/data/", fs_data))
+	fsData := http.FileServer(http.Dir("./data"))
+	http.Handle("/data/", http.StripPrefix("/data/", fsData))
 
-	fmt.Println("listening on port 8080")
-	http.ListenAndServe(":8080", nil)
+	fmt.Println("server is listening on port:", serverConfig.Port)
+	listenAddress := ":" + strconv.Itoa(serverConfig.Port)
+	http.ListenAndServe(listenAddress, nil)
 }

@@ -132,27 +132,27 @@ func wrapTasks(tasks []Task) (result TasksWrapper) {
 }
 
 func isRecent(lastUpdateTime time.Time) bool {
-	live_time := time.Now().Sub(lastUpdateTime).Milliseconds() / 1000
+	liveTime := time.Now().Sub(lastUpdateTime).Milliseconds() / 1000
 	// todo: config this recent time
-	return live_time < 8
+	return liveTime < 8
 }
 
 func generatePrettyAgeForTag(createdDate time.Time) string {
-	var live_time int64 = time.Now().Sub(createdDate).Milliseconds() / 1000
+	var liveTime int64 = time.Now().Sub(createdDate).Milliseconds() / 1000
 
-	year := int64(live_time / 31536000)
-	live_time = live_time - year * 31536000
+	year := int64(liveTime / 31536000)
+	liveTime = liveTime - year * 31536000
 
-	month := int64(live_time / 2592000)
-	live_time = live_time - month * 2592000
+	month := int64(liveTime / 2592000)
+	liveTime = liveTime - month * 2592000
 
-	day := int64(live_time / 86400)
-	live_time = live_time - day * 86400
+	day := int64(liveTime / 86400)
+	liveTime = liveTime - day * 86400
 
-	hour := int64(live_time / 3600)
-	live_time = live_time - hour * 3600
+	hour := int64(liveTime / 3600)
+	liveTime = liveTime - hour * 3600
 
-	minute := int64(live_time / 60)
+	minute := int64(liveTime / 60)
 
 	if (year > 0) {
 		return strconv.FormatInt(year, 10) + "y"
@@ -177,14 +177,14 @@ func convertTimeToString(t *time.Time) string {
 	year, month, date := t.Date()
 	hour, min, _ := t.Clock()
 
-	min_str := strconv.Itoa(min)
-	if len(min_str) == 1 {
-		min_str = "0" + min_str
+	minStr := strconv.Itoa(min)
+	if len(minStr) == 1 {
+		minStr = "0" + minStr
 	}
 
 	return strconv.Itoa(year) + "/" +
 		strconv.Itoa(int(month)) + "/" +
 		strconv.Itoa(date) + " " +
 		strconv.Itoa(hour) + ":" +
-		min_str
+		minStr
 }
