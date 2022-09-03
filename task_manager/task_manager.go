@@ -1,6 +1,7 @@
 package task_manager
 
 import (
+	"fmt"
 	"time"
 	"sort"
 	"strconv"
@@ -24,6 +25,8 @@ type JsonRequest struct {
 }
 
 func HandleRequest(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(r.Method, r.URL, "from", r.RemoteAddr)
+
 	taskGroup := r.URL.Path[len("/tasks/"):]
 
 	if r.Method == "GET" {

@@ -1,4 +1,2 @@
-# backup data 
-# ./dropbox_uploader.sh upload jarvis /
-
-go run .
+go build .
+nohup ./jarvis > jarvis.log 2>&1 &

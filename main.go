@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"net/http"
 	"html/template"
-	"encoding/json"
 	tm "task_manager"
 	mm "media_manager"
 )
@@ -33,19 +32,18 @@ func monitorHandler(w http.ResponseWriter, r* http.Request) {
 	monitor.HandleRequest(w, r)
 }
 
-func readServerConfig() (serverConfig ServerConfig) {
-	encodedConfig, _ := os.ReadFile("server_config.json")
-	json.Unmarshal(encodedConfig, &serverConfig)
-	return 
-}
+func getPort() int {
+	port := os.Getenv("JARVIS_PORT")
+	portValue, err := strconv.Atoi(port)
 
-type ServerConfig struct {
-	Port int
+	if (err != nil) {
+		return 8080
+	} else {
+		return portValue
+	}
 }
 
 func main() {
-	serverConfig := readServerConfig()
-
 	tm.Init()
 	mm.Init()
 	monitor.Init()
@@ -64,7 +62,8 @@ func main() {
 	fsData := http.FileServer(http.Dir("./data"))
 	http.Handle("/data/", http.StripPrefix("/data/", fsData))
 
-	fmt.Println("server is listening on port:", serverConfig.Port)
-	listenAddress := ":" + strconv.Itoa(serverConfig.Port)
+	port := getPort()
+	fmt.Println("server is listening on port:", port)
+	listenAddress := ":" + strconv.Itoa(port)
 	http.ListenAndServe(listenAddress, nil)
 }

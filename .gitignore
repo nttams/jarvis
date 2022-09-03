@@ -3,3 +3,4 @@ data
 jarvis
 nohup.out
 *.bak
+*.log
