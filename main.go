@@ -1,7 +1,6 @@
 package main
 
 import (
-	"os"
 	"fmt"
 	"monitor"
 	"strconv"
@@ -33,14 +32,7 @@ func monitorHandler(w http.ResponseWriter, r* http.Request) {
 }
 
 func getPort() int {
-	port := os.Getenv("JARVIS_PORT")
-	portValue, err := strconv.Atoi(port)
-
-	if (err != nil) {
-		return 8080
-	} else {
-		return portValue
-	}
+	return 8080
 }
 
 func main() {
