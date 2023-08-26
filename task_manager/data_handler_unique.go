@@ -1,20 +1,19 @@
 /**
  * DataHandler (deprecated) uses one file for each task data
  * DataHandlerUnique uses only one file to store all task data
-*/
+ */
 
 package task_manager
 
 import (
+	"encoding/json"
 	"os"
 	"time"
-	"encoding/json"
 )
 
-const PATH = "./data/task_manager_data/tasks.json"
+const PATH = "/data/task_manager_data/tasks.json"
 
 type DataHandlerUnique struct {
-
 }
 
 func (dh DataHandlerUnique) getAFreeId() int {
@@ -30,7 +29,7 @@ func (dh DataHandlerUnique) getAFreeId() int {
 
 func (dh *DataHandlerUnique) createTask(project string, title string, content string, priority Priority) {
 	id := dh.getAFreeId()
-	task := Task { id, project, title, content, Idea, Priority(priority), time.Now(), time.Now() }
+	task := Task{id, project, title, content, Idea, Priority(priority), time.Now(), time.Now()}
 
 	tasks := dh.readAllTasks()
 	tasks = append(tasks, task)
@@ -43,13 +42,13 @@ func (dh *DataHandlerUnique) updateTask(id int, project string, title string, co
 
 	// changing done task's attributes does not update lastUpdateTime
 	if tasks[index].State != Done {
-		tasks[index].LastUpdateTime = time.Now();
+		tasks[index].LastUpdateTime = time.Now()
 	}
 
-	tasks[index].Project = project;
-	tasks[index].Title = title;
-	tasks[index].Content = content;
-	tasks[index].Priority = priority;
+	tasks[index].Project = project
+	tasks[index].Title = title
+	tasks[index].Content = content
+	tasks[index].Priority = priority
 	dh.writeAllTasks(tasks)
 }
 
@@ -57,8 +56,8 @@ func (dh *DataHandlerUnique) changeTaskState(id int, state State) {
 	tasks := dh.readAllTasks()
 	index := findTask(tasks, id)
 
-	tasks[index].State = state;
-	tasks[index].LastUpdateTime = time.Now();
+	tasks[index].State = state
+	tasks[index].LastUpdateTime = time.Now()
 
 	dh.writeAllTasks(tasks)
 }
@@ -67,8 +66,8 @@ func (dh *DataHandlerUnique) deleteTask(id int) {
 	tasks := dh.readAllTasks()
 	index := findTask(tasks, id)
 
-	copy(tasks[index:], tasks[index + 1:])
-	tasks = tasks[: len(tasks) - 1]
+	copy(tasks[index:], tasks[index+1:])
+	tasks = tasks[:len(tasks)-1]
 
 	dh.writeAllTasks(tasks)
 }

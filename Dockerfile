@@ -6,4 +6,5 @@ CMD ./jarvis
 #     --restart always \
 #     --name=jarvis \
 #     --volume "./:/app" \
+#     --volume "/data/jarvis:/data" \
 #     jarvis:latest

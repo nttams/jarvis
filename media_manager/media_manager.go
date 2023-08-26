@@ -1,18 +1,18 @@
 package media_manager
 
 import (
+	"encoding/json"
+	"errors"
+	"html/template"
+	"math/rand"
+	"net/http"
 	"os"
 	"sort"
-	"time"
-	"math/rand"
-	"errors"
 	"strings"
-	"net/http"
-	"encoding/json"
-	"html/template"
+	"time"
 )
 
-const DATA_PATH = "./data/media_manager_data/"
+const DATA_PATH = "/data/media_manager_data/"
 
 type dataConfig struct {
 	Name string
@@ -35,9 +35,9 @@ type VideoData struct {
 }
 
 type VideoPath struct {
-	Path string
+	Path         string
 	SubtitlePath string
-	Name string
+	Name         string
 }
 
 type ImageData struct {
@@ -53,7 +53,7 @@ func getVideoPaths(folderPath string) (result []VideoPath) {
 		name := getFileNameFromPath(path)
 		// todo: don't hardcode
 		subTitlePath := "/static/res/" + folderPath + "/sub/" + name + ".vtt"
-		result = append(result, VideoPath { path, subTitlePath, name })
+		result = append(result, VideoPath{path, subTitlePath, name})
 	}
 	return
 }
@@ -71,7 +71,7 @@ func Init() {
 /**
  * images have their own page for each folder
  * videos have only one for all
-*/
+ */
 
 func HandleRequest(w http.ResponseWriter, r *http.Request) {
 	mediaName := r.URL.Path[len("/media/"):]
@@ -88,18 +88,18 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 			http.NotFound(w, r)
 		} else {
 			switch mediaType {
-				case "image":
-					paths := getImagePaths(path)
+			case "image":
+				paths := getImagePaths(path)
 
-					rand.Shuffle(len(paths), func(i, j int) { paths[i], paths[j] = paths[j], paths[i] } )
+				rand.Shuffle(len(paths), func(i, j int) { paths[i], paths[j] = paths[j], paths[i] })
 
-					imageData := ImageData {path, paths}
-					templates.ExecuteTemplate(w, "images.html", imageData)
-				case "video":
-					videoData := VideoData {path, getVideoPaths(path)}
-					templates.ExecuteTemplate(w, "videos.html", videoData)
-				default:
-					panic("invalid media type")
+				imageData := ImageData{path, paths}
+				templates.ExecuteTemplate(w, "images.html", imageData)
+			case "video":
+				videoData := VideoData{path, getVideoPaths(path)}
+				templates.ExecuteTemplate(w, "videos.html", videoData)
+			default:
+				panic("invalid media type")
 			}
 		}
 	}
@@ -107,7 +107,7 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 
 func lookup(mediaName string) (mediaType, path string, err error) {
 	for _, config := range configs {
-		if (mediaName == config.Name) {
+		if mediaName == config.Name {
 			return config.Type, config.Path, nil
 		}
 	}
@@ -116,7 +116,7 @@ func lookup(mediaName string) (mediaType, path string, err error) {
 
 func getFileNameFromPath(path string) (name string) {
 	elements := strings.Split(path, "/")
-	filename := elements[len(elements) - 1]
+	filename := elements[len(elements)-1]
 	filename = strings.Split(filename, ".")[0]
 	return filename
 }
@@ -131,7 +131,7 @@ func getFileList(folder string) []string {
 	result := []string{}
 
 	for _, v := range files {
-		result = append(result, path[len("."):] + "/" + v.Name())
+		result = append(result, path[len("."):]+"/"+v.Name())
 	}
 	return result
 }

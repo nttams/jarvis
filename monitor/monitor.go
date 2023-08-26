@@ -1,11 +1,11 @@
 package monitor
 
 import (
-	"fmt"
-	"net"
 	"bufio"
-	"net/http"
+	"fmt"
 	"html/template"
+	"net"
+	"net/http"
 )
 
 var templates *template.Template
@@ -22,9 +22,9 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 			templates.ExecuteTemplate(w, "monitor.html", 0)
 		} else {
 			remoteHost, _ := net.ResolveUDPAddr("udp", requestHost)
-			conn, _ := net.DialUDP("udp", &net.UDPAddr {}, remoteHost)
+			conn, _ := net.DialUDP("udp", &net.UDPAddr{}, remoteHost)
 			conn.Write([]byte("anything"))
-			buffer:= make([]byte, 1024)
+			buffer := make([]byte, 1024)
 			count, _ := bufio.NewReader(conn).Read(buffer)
 			fmt.Println(buffer[:count])
 			fmt.Println()
