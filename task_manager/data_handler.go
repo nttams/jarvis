@@ -1,105 +1,93 @@
-// deprecated, use DataHandlerUnique instead
-
 package task_manager
 
 import (
 	"encoding/json"
+	"log"
 	"os"
-	"strconv"
 	"time"
 )
 
-const DATA_PATH = "./data/task_manager_data/data/"
+const PATH = "./data/task_manager_data/tasks.json"
 
-// DataHandler should be stateful for caching stuff
-// But not for now :D
 type DataHandler struct {
 }
 
-func getAFreeId() int {
-	file, _ := os.Open(DATA_PATH)
-
-	files, _ := file.Readdir(0)
-
+func (dh DataHandler) getAFreeId() int {
+	tasks := dh.readAllTasks()
 	max := -1
-	for _, v := range files {
-		filename := v.Name()[:len(v.Name())-5]
-		temp, _ := strconv.Atoi(filename)
-		if temp > max {
-			max = temp
+	for _, task := range tasks {
+		if task.Id > max {
+			max = task.Id
 		}
 	}
 	return max + 1
 }
 
 func (dh *DataHandler) createTask(project string, title string, content string, priority Priority) {
-	id := getAFreeId()
+	id := dh.getAFreeId()
+	task := Task{id, project, title, content, Idea, Priority(priority), time.Now(), time.Now()}
 
-	now := time.Now()
-	task := Task{id, project, title, content, Idea, Priority(priority), now, now}
-	writeTask(&task)
+	tasks := dh.readAllTasks()
+	tasks = append(tasks, task)
+	dh.writeAllTasks(tasks)
 }
 
 func (dh *DataHandler) updateTask(id int, project string, title string, content string, priority Priority) {
-	task := readTask(id)
+	tasks := dh.readAllTasks()
+	index := findTask(tasks, id)
 
-	// changing attribute in done task does not update lastUpdateTime
-	if task.State != Done {
-		task.LastUpdateTime = time.Now()
+	// changing done task's attributes does not update lastUpdateTime
+	if tasks[index].State != Done {
+		tasks[index].LastUpdateTime = time.Now()
 	}
 
-	task.Project = project
-	task.Title = title
-	task.Content = content
-	task.Priority = priority
-	writeTask(&task)
+	tasks[index].Project = project
+	tasks[index].Title = title
+	tasks[index].Content = content
+	tasks[index].Priority = priority
+	dh.writeAllTasks(tasks)
 }
 
 func (dh *DataHandler) changeTaskState(id int, state State) {
-	task := readTask(id)
+	tasks := dh.readAllTasks()
+	index := findTask(tasks, id)
 
-	task.State = state
-	task.LastUpdateTime = time.Now()
-	writeTask(&task)
-}
+	tasks[index].State = state
+	tasks[index].LastUpdateTime = time.Now()
 
-func (dh *DataHandler) readAllTasks() []Task {
-	file, _ := os.Open(DATA_PATH)
-
-	files, _ := file.Readdir(0)
-
-	result := []Task{}
-
-	for _, v := range files {
-		encoded, _ := os.ReadFile(DATA_PATH + v.Name())
-		var task Task
-		_ = json.Unmarshal(encoded, &task)
-		result = append(result, task)
-	}
-
-	return result
+	dh.writeAllTasks(tasks)
 }
 
 func (dh *DataHandler) deleteTask(id int) {
-	os.Remove(getFilePath(id))
+	tasks := dh.readAllTasks()
+	index := findTask(tasks, id)
+
+	copy(tasks[index:], tasks[index+1:])
+	tasks = tasks[:len(tasks)-1]
+
+	dh.writeAllTasks(tasks)
 }
 
-func getFilePath(id int) string {
-	return DATA_PATH + strconv.Itoa(id) + ".json"
+func findTask(tasks []Task, id int) int {
+	for i, task := range tasks {
+		if task.Id == id {
+			return i
+		}
+	}
+	panic("invalid index")
 }
 
-func writeTask(task *Task) error {
-	filename := getFilePath(task.Id)
-
-	encoded, _ := json.Marshal(task)
-
-	// todo: learn this 0600
-	return os.WriteFile(filename, encoded, 0600)
+func (dh DataHandler) readAllTasks() []Task {
+	encoded, err := os.ReadFile(PATH)
+	if err != nil {
+		log.Fatalf("failed to read file: %s, error: %s", PATH, err)
+	}
+	var tasks []Task
+	json.Unmarshal(encoded, &tasks)
+	return tasks
 }
 
-func readTask(id int) Task {
-	encoded, _ := os.ReadFile(getFilePath(id))
-	var task Task
-	json.Unmarshal(encoded, &task)
-	return task
+func (dh DataHandler) writeAllTasks(tasks []Task) {
+	encoded, _ := json.MarshalIndent(tasks, "", "    ")
+	os.WriteFile(PATH, encoded, 0600)
 }

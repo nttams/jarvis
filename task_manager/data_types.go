@@ -22,14 +22,14 @@ const (
 )
 
 type Task struct {
-	Id             int
-	Project        string
-	Title          string
-	Content        string
-	State          State
-	Priority       Priority
-	CreatedTime    time.Time
-	LastUpdateTime time.Time
+	Id             int       `json:"id"`
+	Project        string    `json:"project"`
+	Title          string    `json:"title"`
+	Content        string    `json:"content"`
+	State          State     `json:"state"`
+	Priority       Priority  `json:"priority"`
+	CreatedTime    time.Time `json:"createdTime"`
+	LastUpdateTime time.Time `json:"lastUpdateTime"`
 }
 
 type TaskWrapper struct {

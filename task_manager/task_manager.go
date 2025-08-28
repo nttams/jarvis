@@ -10,11 +10,11 @@ import (
 	"time"
 )
 
-var dh DataHandlerUnique
+var dh DataHandler
 var templates *template.Template
 
 func Init() {
-	dh = DataHandlerUnique{}
+	dh = DataHandler{}
 	templates = template.Must(template.ParseFiles("tmpl/tasks.html", "tmpl/templates.html"))
 }
 
@@ -29,14 +29,14 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 
 	taskGroup := r.URL.Path[len("/tasks/"):]
 
-	if r.Method == "GET" {
+	switch r.Method {
+	case http.MethodGet:
 		if len(taskGroup) == 0 {
 			http.Redirect(w, r, "/tasks/all", http.StatusFound)
 		} else {
 			templates.ExecuteTemplate(w, "tasks.html", getTasksWrapper(taskGroup))
 		}
-	} else if r.Method == "POST" {
-
+	case http.MethodPost:
 		var req JsonRequest
 		_ = json.NewDecoder(r.Body).Decode(&req)
 
@@ -96,7 +96,7 @@ func collectProjectInfos(tasks []Task) []ProjectInfo {
 			projectInfos = append(projectInfos, ProjectInfo{task.Project, 1})
 		}
 	}
-	allProject := []ProjectInfo{ProjectInfo{"all", len(tasks)}}
+	allProject := []ProjectInfo{{"all", len(tasks)}}
 	return append(allProject, projectInfos...)
 }
 
@@ -135,13 +135,13 @@ func wrapTasks(tasks []Task) (result TasksWrapper) {
 }
 
 func isRecent(lastUpdateTime time.Time) bool {
-	liveTime := time.Now().Sub(lastUpdateTime).Milliseconds() / 1000
+	liveTime := time.Since(lastUpdateTime).Milliseconds() / 1000
 	// todo: config this recent time
 	return liveTime < 8
 }
 
 func generatePrettyAgeForTag(createdDate time.Time) string {
-	var liveTime int64 = time.Now().Sub(createdDate).Milliseconds() / 1000
+	var liveTime int64 = time.Since(createdDate).Milliseconds() / 1000
 
 	year := int64(liveTime / 31536000)
 	liveTime = liveTime - year*31536000

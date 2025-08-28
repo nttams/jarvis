@@ -1,32 +1,22 @@
 [
     {
-        "Id": 0,
-        "Project": "life",
-        "Title": "be happy",
-        "Content": "be happy",
-        "State": 1,
-        "Priority": 2,
-        "CreatedTime": "2022-01-01T00:00:00+07:00",
-        "LastUpdateTime": "2022-01-01T00:00:00+07:00"
+        "id": 1,
+        "project": "jarvis",
+        "title": "update home page",
+        "content": "update home page details",
+        "state": 2,
+        "priority": 1,
+        "createdTime": "2022-01-01T00:00:00+07:00",
+        "lastUpdateTime": "2022-01-01T00:00:00+07:00"
     },
     {
-        "Id": 1,
-        "Project": "jarvis",
-        "Title": "update home page",
-        "Content": "update home page details",
-        "State": 2,
-        "Priority": 1,
-        "CreatedTime": "2022-01-01T00:00:00+07:00",
-        "LastUpdateTime": "2022-01-01T00:00:00+07:00"
-    },
-    {
-        "Id": 2,
-        "Project": "jarvis",
-        "Title": "dockerize this app",
-        "Content": "dockerize this app details",
-        "State": 1,
-        "Priority": 1,
-        "CreatedTime": "2023-01-01T00:00:00+07:00",
-        "LastUpdateTime": "2023-01-01T00:00:00+07:00"
+        "id": 2,
+        "project": "jarvis",
+        "title": "dockerize this app",
+        "content": "dockerize this app details",
+        "state": 1,
+        "priority": 1,
+        "createdTime": "2023-01-01T00:00:00+07:00",
+        "lastUpdateTime": "2023-01-01T00:00:00+07:00"
     }
 ]
